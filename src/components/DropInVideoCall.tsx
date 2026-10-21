@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { 
-  PhoneOff, Mic, MicOff, Video, VideoOff, Volume2, 
-  ShieldCheck, Radio, Sparkles, AlertCircle, Camera
+  PhoneOff, Mic, MicOff, Video, VideoOff, 
+  Camera, RefreshCw, AlertCircle, Check
 } from 'lucide-react';
 
 interface DropInVideoCallProps {
@@ -18,11 +18,13 @@ export const DropInVideoCall: React.FC<DropInVideoCallProps> = ({
   const [callDuration, setCallDuration] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
+  const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
   const [hasWebcamAccess, setHasWebcamAccess] = useState(false);
   const [webcamError, setWebcamError] = useState<string | null>(null);
+  const [isConnecting, setIsConnecting] = useState(true);
   const [audioLevel, setAudioLevel] = useState<number[]>(Array(12).fill(10));
 
-  const localVideoRef = useRef<HTMLVideoElement>(null);
+  const localVideoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const animationFrameRef = useRef<number | null>(null);
@@ -35,35 +37,77 @@ export const DropInVideoCall: React.FC<DropInVideoCallProps> = ({
     return () => clearInterval(timer);
   }, []);
 
-  // Initialize WebRTC / MediaStream for real camera and microphone
-  useEffect(() => {
-    let activeStream: MediaStream | null = null;
+  // Dedicated function to attach stream to video element and play
+  const attachStreamToVideo = useCallback((stream: MediaStream) => {
+    if (localVideoRef.current) {
+      localVideoRef.current.srcObject = stream;
+      localVideoRef.current.muted = true; // Required by browsers for autoplay
+      const playPromise = localVideoRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(err => {
+          console.warn('Video auto-play interrupted:', err);
+        });
+      }
+    }
+  }, []);
 
-    async function setupMedia() {
+  // Request user media stream (camera + mic)
+  const setupMedia = useCallback(async () => {
+    setIsConnecting(true);
+    setWebcamError(null);
+
+    try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('getUserMedia is not supported on this browser or platform');
+      }
+
+      // First attempt: video: true, audio: true (broadest Windows compatibility)
+      let stream: MediaStream | null = null;
       try {
-        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-          throw new Error('getUserMedia not supported in this browser environment');
-        }
-
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: 'user' },
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
           audio: true
         });
+      } catch (firstErr) {
+        console.warn('Combined getUserMedia failed, attempting separate video/audio...', firstErr);
+        // Fallback: get video first, then attach audio
+        const videoOnly = await navigator.mediaDevices.getUserMedia({ video: true });
+        stream = videoOnly;
+        try {
+          const audioOnly = await navigator.mediaDevices.getUserMedia({ audio: true });
+          audioOnly.getAudioTracks().forEach(t => stream?.addTrack(t));
+        } catch (audioErr) {
+          console.warn('Audio stream could not be acquired:', audioErr);
+        }
+      }
 
-        activeStream = stream;
-        streamRef.current = stream;
+      if (!stream) {
+        throw new Error('Failed to acquire media stream');
+      }
+
+      streamRef.current = stream;
+      setMediaStream(stream);
+
+      // Check if active video track exists
+      const videoTracks = stream.getVideoTracks();
+      if (videoTracks.length > 0 && videoTracks[0].readyState === 'live') {
         setHasWebcamAccess(true);
         setWebcamError(null);
+      } else {
+        setHasWebcamAccess(false);
+        setWebcamError('No active video track received from webcam');
+      }
 
-        if (localVideoRef.current) {
-          localVideoRef.current.srcObject = stream;
-        }
+      // Attach stream immediately
+      attachStreamToVideo(stream);
 
-        // Setup Web Audio API Analyzer for real-time microphone dancing waves
+      // Setup Web Audio API Analyzer for real-time microphone dancing waves
+      const audioTracks = stream.getAudioTracks();
+      if (audioTracks.length > 0) {
         try {
-          const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-          if (AudioContext) {
-            const audioCtx = new AudioContext();
+          const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+          if (AudioContextClass) {
+            const audioCtx = new AudioContextClass();
             audioContextRef.current = audioCtx;
             const source = audioCtx.createMediaStreamSource(stream);
             const analyser = audioCtx.createAnalyser();
@@ -72,40 +116,42 @@ export const DropInVideoCall: React.FC<DropInVideoCallProps> = ({
 
             const dataArray = new Uint8Array(analyser.frequencyBinCount);
 
-            function updateAudioBars() {
+            const updateAudioBars = () => {
               analyser.getByteFrequencyData(dataArray);
-              // Pick 12 frequency sample bands
               const levels: number[] = [];
               for (let i = 0; i < 12; i++) {
                 const val = dataArray[i * 2] || 0;
-                // Scale from 0-255 to percentage height 10% - 100%
                 const pct = Math.max(10, Math.min(100, (val / 255) * 100));
                 levels.push(pct);
               }
               setAudioLevel(levels);
               animationFrameRef.current = requestAnimationFrame(updateAudioBars);
-            }
+            };
             updateAudioBars();
           }
         } catch (audioErr) {
-          console.warn('Audio analyzer setup error:', audioErr);
+          console.warn('Audio analyzer initialization error:', audioErr);
         }
-      } catch (err: any) {
-        console.warn('Webcam/Mic access could not be acquired:', err.message);
-        setHasWebcamAccess(false);
-        setWebcamError(err.message || 'Camera permission denied or camera unavailable');
       }
+    } catch (err: any) {
+      console.error('Webcam/Mic access error:', err);
+      setHasWebcamAccess(false);
+      setWebcamError(err.name === 'NotAllowedError' ? 'Camera permission was denied in browser' : (err.message || 'Camera is currently in use or unavailable'));
+    } finally {
+      setIsConnecting(false);
     }
+  }, [attachStreamToVideo]);
 
+  // Initial media setup on mount
+  useEffect(() => {
     setupMedia();
 
     return () => {
-      // Clean up all hardware camera & mic streams when call ends
+      // Clean up hardware camera & mic tracks when call ends
       if (streamRef.current) {
-        streamRef.current.getTracks().forEach(track => track.stop());
-      }
-      if (activeStream) {
-        activeStream.getTracks().forEach(track => track.stop());
+        streamRef.current.getTracks().forEach(track => {
+          track.stop();
+        });
       }
       if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
         audioContextRef.current.close().catch(() => {});
@@ -114,7 +160,14 @@ export const DropInVideoCall: React.FC<DropInVideoCallProps> = ({
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, []);
+  }, [setupMedia]);
+
+  // Ensure video element plays whenever mediaStream state changes
+  useEffect(() => {
+    if (mediaStream) {
+      attachStreamToVideo(mediaStream);
+    }
+  }, [mediaStream, attachStreamToVideo]);
 
   // Toggle Mute
   const handleToggleMute = () => {
@@ -132,11 +185,12 @@ export const DropInVideoCall: React.FC<DropInVideoCallProps> = ({
   // Toggle Video
   const handleToggleVideo = () => {
     if (streamRef.current) {
+      const nextState = !isVideoEnabled;
       const videoTracks = streamRef.current.getVideoTracks();
       videoTracks.forEach(track => {
-        track.enabled = !track.enabled;
+        track.enabled = nextState;
       });
-      setIsVideoEnabled(!isVideoEnabled);
+      setIsVideoEnabled(nextState);
     } else {
       setIsVideoEnabled(!isVideoEnabled);
     }
@@ -199,34 +253,57 @@ export const DropInVideoCall: React.FC<DropInVideoCallProps> = ({
           </div>
         </div>
 
-        {/* PIP: Eleanor's Live Echo Show Webcam (Uses Real Browser Camera!) */}
-        <div className="absolute top-3 right-3 w-44 sm:w-52 aspect-video rounded-xl overflow-hidden border-2 border-indigo-400/80 bg-slate-950 shadow-2xl transition-all">
-          {hasWebcamAccess ? (
-            <video
-              ref={localVideoRef}
-              autoPlay
-              playsInline
-              muted
-              className={`w-full h-full object-cover transform -scale-x-100 ${!isVideoEnabled ? 'hidden' : ''}`}
-            />
-          ) : (
-            <div className="w-full h-full flex flex-col items-center justify-center p-2 text-center bg-slate-900">
-              <Camera className="w-5 h-5 text-slate-500 mb-1" />
-              <span className="text-[10px] font-mono text-slate-400">Echo Cam Active</span>
-              <span className="text-[9px] text-slate-500">{webcamError ? 'Webcam simulated' : 'Connecting cam...'}</span>
-            </div>
-          )}
+        {/* PIP: Eleanor's Live Echo Show Webcam (Always mounted in DOM for zero-latency video rendering) */}
+        <div className="absolute top-3 right-3 w-48 sm:w-56 aspect-video rounded-xl overflow-hidden border-2 border-indigo-400/80 bg-slate-950 shadow-2xl transition-all">
+          {/* Real Live Hardware Video Element */}
+          <video
+            ref={(el) => {
+              localVideoRef.current = el;
+              if (el && mediaStream && el.srcObject !== mediaStream) {
+                el.srcObject = mediaStream;
+                el.muted = true;
+                el.play().catch(() => {});
+              }
+            }}
+            autoPlay
+            playsInline
+            muted
+            onLoadedMetadata={(e) => {
+              const v = e.currentTarget;
+              v.play().catch(err => console.warn('Play error on loadedmetadata:', err));
+            }}
+            className={`w-full h-full object-cover transform -scale-x-100 ${
+              hasWebcamAccess && isVideoEnabled ? 'block' : 'hidden'
+            }`}
+          />
 
-          {!isVideoEnabled && (
-            <div className="w-full h-full flex items-center justify-center bg-slate-900 text-slate-400 text-xs font-mono">
-              <VideoOff className="w-5 h-5" />
+          {/* Fallback Display if Camera is Off, Denied, or Connecting */}
+          {(!hasWebcamAccess || !isVideoEnabled || isConnecting) && (
+            <div className="w-full h-full flex flex-col items-center justify-center p-2 text-center bg-slate-900/95 text-slate-300">
+              <Camera className="w-5 h-5 text-indigo-400 mb-1" />
+              <span className="text-[10px] font-mono font-semibold">
+                {!isVideoEnabled ? 'Camera Muted' : isConnecting ? 'Connecting Camera...' : 'Echo Cam (Simulated)'}
+              </span>
+              <span className="text-[9px] text-slate-400 mt-0.5 line-clamp-1 px-1">
+                {webcamError || 'Click retry if prompt was missed'}
+              </span>
+              {!hasWebcamAccess && !isConnecting && (
+                <button
+                  onClick={setupMedia}
+                  className="mt-1.5 px-2 py-0.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-[10px] font-mono text-white flex items-center gap-1 cursor-pointer transition-colors"
+                >
+                  <RefreshCw className="w-2.5 h-2.5" /> Retry Cam
+                </button>
+              )}
             </div>
           )}
 
           {/* PiP Badge */}
-          <div className="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded bg-black/70 backdrop-blur-sm text-[9px] text-slate-200 font-mono flex items-center gap-1">
-            <span className={`w-1.5 h-1.5 rounded-full ${hasWebcamAccess && isVideoEnabled ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`}></span>
-            <span>{hasWebcamAccess ? 'Your Live Cam' : 'Echo Cam (Simulated)'}</span>
+          <div className="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded bg-black/75 backdrop-blur-sm text-[9px] text-slate-200 font-mono flex items-center gap-1 z-10">
+            <span className={`w-1.5 h-1.5 rounded-full ${
+              hasWebcamAccess && isVideoEnabled ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'
+            }`}></span>
+            <span>{hasWebcamAccess && isVideoEnabled ? 'Your Live Cam' : 'Living Room Cam'}</span>
           </div>
         </div>
 
