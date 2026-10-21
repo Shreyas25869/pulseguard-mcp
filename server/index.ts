@@ -137,6 +137,49 @@ app.post('/api/medications/snooze', async (req, res) => {
   });
 });
 
+// 3c. Emergency Interactive Actions (False Alarm / Dispatch 911 / Drop-In)
+app.post('/api/emergency/cancel-false-alarm', async (req, res) => {
+  const agentExecution = await bedrockAgent.runAgentReasoning("False alarm, I am okay. Please cancel emergency.");
+  res.json({
+    success: true,
+    agentExecution,
+    currentState: {
+      vitals: telemetryState.getVitals(),
+      medications: telemetryState.getMedications(),
+      ring: telemetryState.getRingSecurity(),
+      auditLogs: telemetryState.getAuditLogs()
+    }
+  });
+});
+
+app.post('/api/emergency/dispatch-now', async (req, res) => {
+  const agentExecution = await bedrockAgent.runAgentReasoning("I cannot get up, I hurt my hip. Please dispatch an ambulance now.");
+  res.json({
+    success: true,
+    agentExecution,
+    currentState: {
+      vitals: telemetryState.getVitals(),
+      medications: telemetryState.getMedications(),
+      ring: telemetryState.getRingSecurity(),
+      auditLogs: telemetryState.getAuditLogs()
+    }
+  });
+});
+
+app.post('/api/emergency/drop-in', async (req, res) => {
+  const agentExecution = await bedrockAgent.runAgentReasoning("Please call my daughter Sarah right now via Drop-In.");
+  res.json({
+    success: true,
+    agentExecution,
+    currentState: {
+      vitals: telemetryState.getVitals(),
+      medications: telemetryState.getMedications(),
+      ring: telemetryState.getRingSecurity(),
+      auditLogs: telemetryState.getAuditLogs()
+    }
+  });
+});
+
 // 4. Alexa+ Voice / Chat Interaction (Runs full Bedrock MCP Tool reasoning loop)
 app.post('/api/chat', async (req, res) => {
   const { prompt } = req.body;

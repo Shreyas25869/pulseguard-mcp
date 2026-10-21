@@ -165,6 +165,180 @@ When an alert or query occurs:
     const steps: AgentActionStep[] = [];
     const lower = prompt.toLowerCase();
 
+    // --- 0a. Emergency Interactive Reply: False Alarm / Patient Confirmed OK ---
+    if (
+      lower.includes('false alarm') ||
+      lower.includes("i'm ok") ||
+      lower.includes('i am ok') ||
+      lower.includes("i'm okay") ||
+      lower.includes('i am okay') ||
+      lower.includes("i'm fine") ||
+      lower.includes('i am fine') ||
+      lower.includes('cancel emergency') ||
+      lower.includes('dropped sensor')
+    ) {
+      // Step 1: Relock Ring deadbolt
+      const ringLock = await executeToolDirectly('control_ring_security', {
+        action: 'lock_smart_deadbolt',
+        reason: 'Patient confirmed false alarm. Re-securing perimeter.'
+      });
+      steps.push({
+        step: 1,
+        timestamp: new Date().toISOString(),
+        thought: '🔒 False alarm confirmed by patient: Invoking control_ring_security to re-lock smart deadbolt and secure perimeter.',
+        toolCall: {
+          name: 'control_ring_security',
+          arguments: { action: 'lock_smart_deadbolt', reason: 'False alarm cancellation' }
+        },
+        toolResult: ringLock
+      });
+
+      // Step 2: Reset telemetry to normal resting state
+      telemetryState.updateVitals({
+        fallDetected: false,
+        bodyOrientation: 'sitting',
+        heartRate: 78,
+        systolicBP: 126,
+        diastolicBP: 82,
+        lastMovementSecondsAgo: 2
+      });
+
+      // Step 3: Commit cancellation to DynamoDB care ledger
+      const auditResult = await executeToolDirectly('record_care_event_log', {
+        eventType: 'fall_alert',
+        severity: 'info',
+        summary: 'False alarm confirmed by Eleanor Vance. Perimeter re-locked.',
+        outcome: 'Caregiver Sarah Vance notified via SMS that Eleanor is safe. Emergency triage closed.'
+      });
+      steps.push({
+        step: 2,
+        timestamp: new Date().toISOString(),
+        thought: '📋 Logging cancellation to Amazon DynamoDB care store and notifying caregiver.',
+        toolCall: {
+          name: 'record_care_event_log',
+          arguments: { eventType: 'fall_alert', severity: 'info', summary: 'False alarm resolved' }
+        },
+        toolResult: auditResult
+      });
+
+      const speech = "I'm so glad you're okay, Eleanor! I have secured your front deadbolt and updated your daughter Sarah that it was a false alarm. Please take a moment to rest in the living room.";
+      steps.push({
+        step: 3,
+        timestamp: new Date().toISOString(),
+        thought: 'Agent synthesized calm reassurance and transitioned Echo Show 15 back to normal ambient mode.',
+        speechOutput: speech
+      });
+
+      return {
+        speechOutput: speech,
+        steps,
+        status: 'resolved',
+        usedLiveBedrock: false
+      };
+    }
+
+    // --- 0b. Emergency Interactive Reply: Patient Needs Ambulance / Injured ---
+    if (
+      lower.includes('ambulance') ||
+      lower.includes('paramedic') ||
+      lower.includes('hurt') ||
+      lower.includes("can't get up") ||
+      lower.includes('cannot get up') ||
+      lower.includes('send help') ||
+      lower.includes('dispatch now')
+    ) {
+      // Step 1: Escalate dispatch
+      const dispatchResult = await executeToolDirectly('dispatch_emergency_escalation', {
+        severity: 'critical_emergency',
+        sbarSummary: 'SITUATION: Patient verified acute injury and inability to rise. EMT priority 1 requested.',
+        recommendedActions: ['King County EMS Unit 4 en route', 'Porch strobe illuminated', 'Access code 911-EMT active']
+      });
+      steps.push({
+        step: 1,
+        timestamp: new Date().toISOString(),
+        thought: '🚨 Patient confirmed acute trauma and immobility. Escalating King County EMS priority dispatch.',
+        toolCall: {
+          name: 'dispatch_emergency_escalation',
+          arguments: { severity: 'critical_emergency', sbarSummary: 'Patient confirmed injury' }
+        },
+        toolResult: dispatchResult
+      });
+
+      // Step 2: Audit log
+      const auditResult = await executeToolDirectly('record_care_event_log', {
+        eventType: 'emergency_dispatch',
+        severity: 'emergency',
+        summary: 'Ambulance dispatch confirmed by patient speech. EMS Unit 4 en route (ETA 4 min).',
+        outcome: 'Front deadbolt unlocked (Code: 911-EMT). Clinical EHR displayed on Echo Show.'
+      });
+      steps.push({
+        step: 2,
+        timestamp: new Date().toISOString(),
+        thought: '📋 Committing urgent ambulance dispatch record to DynamoDB.',
+        toolCall: {
+          name: 'record_care_event_log',
+          arguments: { eventType: 'emergency_dispatch', severity: 'emergency', summary: 'Ambulance confirmed' }
+        },
+        toolResult: auditResult
+      });
+
+      const speech = "Eleanor, King County EMS Unit 4 has been dispatched with priority access code 911-EMT. Your front deadbolt is unlocked and the porch floodlight is on. They will arrive in approximately 4 minutes. I am staying right here with you on the screen. Please do not move.";
+      steps.push({
+        step: 3,
+        timestamp: new Date().toISOString(),
+        thought: 'Agent synthesized emergency guidance with EMT arrival ETA and responder instructions.',
+        speechOutput: speech
+      });
+
+      return {
+        speechOutput: speech,
+        steps,
+        status: 'escalated',
+        usedLiveBedrock: false
+      };
+    }
+
+    // --- 0c. Emergency Interactive Reply: Drop-In Call with Sarah ---
+    if (
+      lower.includes('call sarah') ||
+      lower.includes('call my daughter') ||
+      lower.includes('call daughter') ||
+      lower.includes('drop-in') ||
+      lower.includes('video call')
+    ) {
+      const auditResult = await executeToolDirectly('record_care_event_log', {
+        eventType: 'ambient_check',
+        severity: 'warning',
+        summary: 'Emergency Echo Show Drop-In video call connected with Sarah Vance.',
+        outcome: 'Two-way audio/video stream initiated on Echo Show 15.'
+      });
+      steps.push({
+        step: 1,
+        timestamp: new Date().toISOString(),
+        thought: '📞 Initiating emergency Alexa Drop-In video connection between Echo Show 15 and Sarah Vance mobile app.',
+        toolCall: {
+          name: 'record_care_event_log',
+          arguments: { eventType: 'ambient_check', severity: 'warning', summary: 'Drop-In call connected' }
+        },
+        toolResult: auditResult
+      });
+
+      const speech = "Starting an emergency Alexa Drop-In video call to your daughter Sarah Vance right now. The channel is open, Eleanor.";
+      steps.push({
+        step: 2,
+        timestamp: new Date().toISOString(),
+        thought: 'Two-way voice and video stream active on Echo Show.',
+        speechOutput: speech
+      });
+
+      return {
+        speechOutput: speech,
+        steps,
+        status: 'escalated',
+        usedLiveBedrock: false
+      };
+    }
+
     if (lower.includes('fall') || lower.includes('impact') || lower.includes('tachycardia')) {
       // Step 1: Vitals Tool
       const vitalsResult = await executeToolDirectly('get_patient_vitals_telemetry', { patientId: 'PT-8821' });

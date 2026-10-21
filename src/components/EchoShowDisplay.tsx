@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Heart, Activity, Pill, ShieldCheck, ShieldAlert, KeyRound, 
   Video, Mic, AlertTriangle, Clock, MapPin, CheckCircle2, UserCheck,
-  CloudSun, Bell, Volume2, Shield
+  CloudSun, Bell, Volume2, Shield, FileText, PhoneCall, PhoneOff, X, 
+  AlertOctagon, Check, Sparkles
 } from 'lucide-react';
 import { PatientVitals, MedicationItem, RingSecurityState, AgentExecutionResult } from '../types.ts';
 import { ECGWaveform } from './ECGWaveform.tsx';
@@ -16,6 +17,9 @@ interface EchoShowDisplayProps {
   onQuickAction: (actionPrompt: string) => void;
   onConfirmMedication?: (medId: string) => void;
   onSnoozeMedication?: (medId: string) => void;
+  onCancelFalseAlarm?: () => void;
+  onDispatchAmbulanceNow?: () => void;
+  onDropInCall?: () => void;
 }
 
 export const EchoShowDisplay: React.FC<EchoShowDisplayProps> = ({
@@ -26,10 +30,40 @@ export const EchoShowDisplay: React.FC<EchoShowDisplayProps> = ({
   isProcessing,
   onQuickAction,
   onConfirmMedication,
-  onSnoozeMedication
+  onSnoozeMedication,
+  onCancelFalseAlarm,
+  onDispatchAmbulanceNow,
+  onDropInCall
 }) => {
+  const [showMedicalFile, setShowMedicalFile] = useState(false);
+  const [showDropInCall, setShowDropInCall] = useState(false);
+  const [countdown, setCountdown] = useState(30);
+
   const isEmergency = vitals.fallDetected || vitals.heartRate > 130;
   const missedMed = medications.find(m => m.status === 'missed');
+
+  // 30-Second Life-Safety Auto-Dispatch Countdown
+  useEffect(() => {
+    let timer: any = null;
+    if (vitals.fallDetected) {
+      setCountdown(30);
+      timer = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } else {
+      setCountdown(30);
+      setShowDropInCall(false);
+    }
+    return () => {
+      if (timer) clearInterval(timer);
+    };
+  }, [vitals.fallDetected]);
 
   return (
     <div className="relative rounded-[2.2rem] p-3 bg-gradient-to-b from-slate-700 via-slate-800 to-slate-900 shadow-2xl border border-slate-700/60 transition-all">
@@ -170,9 +204,21 @@ export const EchoShowDisplay: React.FC<EchoShowDisplayProps> = ({
                   </span>
                 </div>
 
+                {/* 30s Auto-Dispatch Countdown Ribbon */}
+                <div className="flex items-center justify-between bg-black/40 border border-red-700/60 rounded-xl px-3.5 py-2 mb-3 text-xs font-mono">
+                  <div className="flex items-center gap-2 text-red-200">
+                    <Clock className="w-3.5 h-3.5 text-red-400 animate-pulse" />
+                    <span>Auto-Dispatching 911 Ambulance in:</span>
+                    <span className="text-sm font-bold text-red-400 bg-red-950 px-2.5 py-0.5 rounded border border-red-800">
+                      00:{countdown < 10 ? `0${countdown}` : countdown}s
+                    </span>
+                  </div>
+                  <span className="text-[10px] text-red-300 hidden sm:inline">Unacknowledged Fall Protocol</span>
+                </div>
+
                 {/* Spoken voice callout */}
-                <div className="bg-slate-950/80 border border-red-700/60 rounded-2xl p-4 mb-4">
-                  <div className="flex items-center gap-2 text-xs font-semibold text-red-300 mb-1.5">
+                <div className="bg-slate-950/80 border border-red-700/60 rounded-2xl p-3.5 mb-3">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-red-300 mb-1">
                     <Mic className="w-3.5 h-3.5 text-red-400" /> Alexa+ Voice Speaking to Eleanor:
                   </div>
                   <p className="text-sm text-red-100 italic leading-relaxed">
@@ -180,17 +226,95 @@ export const EchoShowDisplay: React.FC<EchoShowDisplayProps> = ({
                   </p>
                 </div>
 
+                {/* INTERACTIVE PATIENT DECISION BUTTONS */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
+                  {/* I'm OK / False Alarm */}
+                  <button
+                    onClick={() => {
+                      if (onCancelFalseAlarm) onCancelFalseAlarm();
+                      else onQuickAction("False alarm, I am okay. Please cancel emergency.");
+                    }}
+                    disabled={isProcessing}
+                    className="p-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all flex flex-col items-center justify-center gap-1 shadow-md cursor-pointer disabled:opacity-50"
+                  >
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>I'm OK (False Alarm)</span>
+                  </button>
+
+                  {/* Dispatch Ambulance Now */}
+                  <button
+                    onClick={() => {
+                      if (onDispatchAmbulanceNow) onDispatchAmbulanceNow();
+                      else onQuickAction("I cannot get up, I hurt my hip. Please dispatch an ambulance now.");
+                    }}
+                    disabled={isProcessing}
+                    className="p-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-bold transition-all flex flex-col items-center justify-center gap-1 shadow-md cursor-pointer disabled:opacity-50"
+                  >
+                    <ShieldAlert className="w-4 h-4 animate-bounce" />
+                    <span>Dispatch 911 Now</span>
+                  </button>
+
+                  {/* Drop-In with Sarah */}
+                  <button
+                    onClick={() => {
+                      setShowDropInCall(true);
+                      if (onDropInCall) onDropInCall();
+                      else onQuickAction("Please call my daughter Sarah right now via Drop-In.");
+                    }}
+                    disabled={isProcessing}
+                    className="p-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all flex flex-col items-center justify-center gap-1 shadow-md cursor-pointer disabled:opacity-50"
+                  >
+                    <Video className="w-4 h-4" />
+                    <span>Drop-In (Sarah)</span>
+                  </button>
+
+                  {/* View Clinical SBAR File */}
+                  <button
+                    onClick={() => setShowMedicalFile(true)}
+                    className="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 text-xs font-bold transition-all flex flex-col items-center justify-center gap-1 shadow-md cursor-pointer"
+                  >
+                    <FileText className="w-4 h-4 text-sky-400" />
+                    <span>EMT Medical File</span>
+                  </button>
+                </div>
+
+                {/* Spoken Voice Response Quick-Pills */}
+                <div className="flex items-center gap-1.5 flex-wrap text-[11px] mb-3">
+                  <span className="text-slate-400 font-medium">Quick Spoken Replies:</span>
+                  <button
+                    onClick={() => onQuickAction("I fell and can't get up, my hip hurts")}
+                    disabled={isProcessing}
+                    className="px-2.5 py-1 rounded-lg bg-red-950/80 border border-red-800 text-red-200 hover:bg-red-900 transition-colors cursor-pointer disabled:opacity-50"
+                  >
+                    🗣️ "I can't get up, my hip hurts"
+                  </button>
+                  <button
+                    onClick={() => onQuickAction("I just dropped the sensor by mistake, I'm okay")}
+                    disabled={isProcessing}
+                    className="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700 text-slate-300 hover:bg-slate-800 transition-colors cursor-pointer disabled:opacity-50"
+                  >
+                    🗣️ "Dropped sensor, I'm fine"
+                  </button>
+                  <button
+                    onClick={() => onQuickAction("Please call my daughter Sarah right now")}
+                    disabled={isProcessing}
+                    className="px-2.5 py-1 rounded-lg bg-indigo-950/80 border border-indigo-800 text-indigo-200 hover:bg-indigo-900 transition-colors cursor-pointer disabled:opacity-50"
+                  >
+                    🗣️ "Call Sarah right now"
+                  </button>
+                </div>
+
                 {/* Action summary checklist */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
-                  <div className="flex items-center gap-2 p-2.5 rounded-xl bg-slate-900/90 border border-red-800/60 text-red-200">
+                  <div className="flex items-center gap-2 p-2 rounded-xl bg-slate-900/90 border border-red-800/60 text-red-200">
                     <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
                     <span className="truncate">Sarah Vance Notified (SMS)</span>
                   </div>
-                  <div className="flex items-center gap-2 p-2.5 rounded-xl bg-slate-900/90 border border-red-800/60 text-red-200">
+                  <div className="flex items-center gap-2 p-2 rounded-xl bg-slate-900/90 border border-red-800/60 text-red-200">
                     <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
                     <span className="truncate">Ring Deadbolt Unlocked (Code: 911-EMT)</span>
                   </div>
-                  <div className="flex items-center gap-2 p-2.5 rounded-xl bg-slate-900/90 border border-red-800/60 text-red-200">
+                  <div className="flex items-center gap-2 p-2 rounded-xl bg-slate-900/90 border border-red-800/60 text-red-200">
                     <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
                     <span className="truncate">SBAR Triage Ledger Committed</span>
                   </div>
@@ -365,6 +489,159 @@ export const EchoShowDisplay: React.FC<EchoShowDisplayProps> = ({
           </div>
         </div>
       </div>
+
+      {/* EMT CLINICAL SBAR HANDOFF DOSSIER MODAL */}
+      {showMedicalFile && (
+        <div className="absolute inset-0 z-50 bg-slate-950/95 backdrop-blur-md rounded-[2.2rem] p-6 flex flex-col justify-between overflow-y-auto border-2 border-sky-500/80 shadow-2xl">
+          <div>
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-sky-950 border border-sky-700 flex items-center justify-center">
+                  <FileText className="w-5 h-5 text-sky-400" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                    Emergency First Responder Clinical File <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 font-mono">SBAR Standard</span>
+                  </h3>
+                  <p className="text-[11px] text-slate-400 font-mono">
+                    UW Medicine / King County EMS Handoff · Echo Show Terminal
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowMedicalFile(false)}
+                className="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* SBAR 4-Block Breakdown */}
+            <div className="space-y-3 text-xs">
+              {/* Situation */}
+              <div className="p-3 rounded-xl bg-red-950/30 border border-red-800/60">
+                <span className="font-mono text-[10px] font-bold text-red-400 uppercase tracking-wider block mb-1">
+                  [S] Situation · Acute Emergency Incident
+                </span>
+                <p className="text-slate-200">
+                  78yo female detected in supine floor orientation following a 3.85G impact fall in hallway boundary. Tachycardia present (142 BPM, regular narrow complex rhythm). Motionless for 74s prior to agent alert.
+                </p>
+              </div>
+
+              {/* Background */}
+              <div className="p-3 rounded-xl bg-slate-900 border border-slate-800">
+                <span className="font-mono text-[10px] font-bold text-sky-400 uppercase tracking-wider block mb-1">
+                  [B] Background · Medical History & Diagnoses
+                </span>
+                <p className="text-slate-300">
+                  Non-valvular Atrial Fibrillation (CHADS-VASc: 4), Primary Essential Hypertension, Osteopenia. Full code status.
+                </p>
+                <div className="mt-2 pt-2 border-t border-slate-800/80 flex items-center gap-4 text-[11px] text-slate-400 font-mono">
+                  <span>DOB: 04/12/1948 (78yo)</span>
+                  <span>Blood Type: A+ Positive</span>
+                  <span>Primary Cardiologist: Dr. Robert Chen</span>
+                </div>
+              </div>
+
+              {/* Critical Allergies & Active Prescriptions */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <div className="p-3 rounded-xl bg-amber-950/30 border border-amber-800/60">
+                  <span className="font-mono text-[10px] font-bold text-amber-400 uppercase tracking-wider block mb-1">
+                    ⚠️ Critical Drug Allergies
+                  </span>
+                  <p className="text-amber-200 font-semibold">
+                    PENICILLIN (Severe Anaphylaxis / Angioedema)
+                  </p>
+                  <p className="text-[11px] text-slate-400 mt-1">Avoid all Beta-lactam antibiotics</p>
+                </div>
+
+                <div className="p-3 rounded-xl bg-slate-900 border border-slate-800">
+                  <span className="font-mono text-[10px] font-bold text-cyan-400 uppercase tracking-wider block mb-1">
+                    Current Active Medications
+                  </span>
+                  <ul className="text-[11px] text-slate-300 space-y-0.5">
+                    <li>• Eliquis (Apixaban) 5mg BID (Anticoagulant)</li>
+                    <li>• Lisinopril 10mg daily (ACE Inhibitor)</li>
+                    <li>• Metformin 500mg ER daily</li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* Assessment & Recommendation */}
+              <div className="p-3 rounded-xl bg-emerald-950/30 border border-emerald-800/60">
+                <span className="font-mono text-[10px] font-bold text-emerald-400 uppercase tracking-wider block mb-1">
+                  [A / R] Assessment & Smart Home Staging Action
+                </span>
+                <p className="text-slate-200">
+                  High suspicion of mechanical fall with secondary tachydysrhythmia. Ring Smart Deadbolt disengaged with emergency code <span className="font-mono font-bold text-white bg-slate-900 px-1.5 py-0.5 rounded border border-emerald-600">911-EMT</span>. Front porch floodlight strobe enabled. Daughter Sarah Vance notified via AWS SNS.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="pt-3 border-t border-slate-800 flex items-center justify-between">
+            <span className="text-[11px] font-mono text-slate-400">
+              DynamoDB Audit Key: <span className="text-sky-400">AWS-SBAR-PT8821-EMERGENCY</span>
+            </span>
+            <button
+              onClick={() => setShowMedicalFile(false)}
+              className="px-4 py-1.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs transition-all cursor-pointer"
+            >
+              Close Dossier
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ALEXA DROP-IN TWO-WAY AUDIO/VIDEO OVERLAY */}
+      {showDropInCall && (
+        <div className="absolute inset-0 z-50 bg-slate-950/95 backdrop-blur-md rounded-[2.2rem] p-6 flex flex-col justify-between border-2 border-indigo-500/80 shadow-2xl">
+          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-indigo-600/30 border border-indigo-500 flex items-center justify-center">
+                <Video className="w-5 h-5 text-indigo-400" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                  Emergency Drop-In Call <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 font-mono animate-pulse">LIVE AUDIO/VIDEO</span>
+                </h3>
+                <p className="text-[11px] text-slate-400 font-mono">
+                  Connected to: Sarah Vance (Daughter's iPhone) · Living Room Echo Show 15
+                </p>
+              </div>
+            </div>
+            <span className="text-xs font-mono text-emerald-400 bg-slate-900 px-2 py-1 rounded-lg border border-slate-800">
+              00:18s
+            </span>
+          </div>
+
+          {/* Simulated Video Frame */}
+          <div className="relative rounded-2xl overflow-hidden border border-slate-700 bg-slate-900 h-56 my-3 flex items-center justify-center">
+            <img
+              src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=800&auto=format&fit=crop&q=80"
+              alt="Sarah Vance Drop-In"
+              className="w-full h-full object-cover brightness-95"
+            />
+            <div className="absolute bottom-3 left-3 right-3 p-3 rounded-xl bg-black/80 backdrop-blur-md border border-white/10 text-xs text-white">
+              <p className="font-semibold text-indigo-300 mb-0.5">Sarah Vance Speaking:</p>
+              <p className="italic">"Mom! The alert woke me up! I can see your vitals and that the front door is unlocked. Don't try to stand up, EMS is on the way!"</p>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between pt-2">
+            <div className="flex items-center gap-2 text-xs font-mono text-slate-400">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> Two-way speaker active
+            </div>
+            <button
+              onClick={() => setShowDropInCall(false)}
+              className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs flex items-center gap-2 transition-all cursor-pointer shadow-lg shadow-red-600/30"
+            >
+              <PhoneOff className="w-4 h-4" />
+              <span>End Drop-In</span>
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

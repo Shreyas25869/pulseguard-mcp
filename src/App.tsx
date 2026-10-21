@@ -228,6 +228,96 @@ export default function App() {
     }
   };
 
+  // Emergency Interactive Handlers (Scenario 1)
+  const handleCancelFalseAlarm = async () => {
+    setIsProcessing(true);
+    playAlexaChime('success');
+
+    // Optimistic UI reset
+    setVitals(prev => ({
+      ...prev,
+      fallDetected: false,
+      bodyOrientation: 'sitting',
+      heartRate: 78,
+      systolicBP: 126,
+      diastolicBP: 82
+    }));
+    setRing(prev => ({ ...prev, doorLockState: 'locked' }));
+
+    try {
+      const res = await fetch('/api/emergency/cancel-false-alarm', { method: 'POST' });
+      if (res.ok) {
+        const data = await res.json();
+        setVitals(data.currentState.vitals);
+        setMedications(data.currentState.medications);
+        setRing(data.currentState.ring);
+        setAuditLogs(data.currentState.auditLogs);
+        if (data.agentExecution) {
+          setLastExecution(data.agentExecution);
+          if (data.agentExecution.speechOutput) {
+            speakAlexaVoice(data.agentExecution.speechOutput);
+          }
+        }
+      }
+    } catch (err) {
+      console.error('Cancel false alarm error:', err);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleDispatchAmbulanceNow = async () => {
+    setIsProcessing(true);
+    playAlexaChime('alert');
+
+    try {
+      const res = await fetch('/api/emergency/dispatch-now', { method: 'POST' });
+      if (res.ok) {
+        const data = await res.json();
+        setVitals(data.currentState.vitals);
+        setMedications(data.currentState.medications);
+        setRing(data.currentState.ring);
+        setAuditLogs(data.currentState.auditLogs);
+        if (data.agentExecution) {
+          setLastExecution(data.agentExecution);
+          if (data.agentExecution.speechOutput) {
+            speakAlexaVoice(data.agentExecution.speechOutput);
+          }
+        }
+      }
+    } catch (err) {
+      console.error('Dispatch ambulance error:', err);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleDropInCall = async () => {
+    setIsProcessing(true);
+    playAlexaChime('wake');
+
+    try {
+      const res = await fetch('/api/emergency/drop-in', { method: 'POST' });
+      if (res.ok) {
+        const data = await res.json();
+        setVitals(data.currentState.vitals);
+        setMedications(data.currentState.medications);
+        setRing(data.currentState.ring);
+        setAuditLogs(data.currentState.auditLogs);
+        if (data.agentExecution) {
+          setLastExecution(data.agentExecution);
+          if (data.agentExecution.speechOutput) {
+            speakAlexaVoice(data.agentExecution.speechOutput);
+          }
+        }
+      }
+    } catch (err) {
+      console.error('Drop-In call error:', err);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   // Remote Ring deadbolt toggle
   const handleToggleLock = async () => {
     try {
@@ -278,6 +368,9 @@ export default function App() {
                   onQuickAction={handleCustomPrompt}
                   onConfirmMedication={handleConfirmMedication}
                   onSnoozeMedication={handleSnoozeMedication}
+                  onCancelFalseAlarm={handleCancelFalseAlarm}
+                  onDispatchAmbulanceNow={handleDispatchAmbulanceNow}
+                  onDropInCall={handleDropInCall}
                 />
               </div>
 
@@ -310,6 +403,9 @@ export default function App() {
               onQuickAction={handleCustomPrompt}
               onConfirmMedication={handleConfirmMedication}
               onSnoozeMedication={handleSnoozeMedication}
+              onCancelFalseAlarm={handleCancelFalseAlarm}
+              onDispatchAmbulanceNow={handleDispatchAmbulanceNow}
+              onDropInCall={handleDropInCall}
             />
           </div>
         )}
