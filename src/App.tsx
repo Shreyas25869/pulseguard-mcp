@@ -8,10 +8,11 @@ import { McpSchemaViewer } from './components/McpSchemaViewer.tsx';
 import { CaregiverPortal } from './components/CaregiverPortal.tsx';
 import { DeveloperHub } from './components/DeveloperHub.tsx';
 import { playAlexaChime } from './utils/audio.ts';
-import { PatientVitals, MedicationItem, RingSecurityState, CareAuditEntry, AgentExecutionResult } from './types.ts';
+import { PatientVitals, MedicationItem, RingSecurityState, CareAuditEntry, AgentExecutionResult, SnoozeTimerState } from './types.ts';
 
 export default function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('split');
+  const [snoozeTimer, setSnoozeTimer] = useState<SnoozeTimerState | null>(null);
   const [vitals, setVitals] = useState<PatientVitals>({
     patientId: 'PT-8821',
     name: 'Eleanor Vance',
@@ -160,10 +161,59 @@ export default function App() {
     }
   };
 
+  // Background 1-second interval for Active Snooze Timer
+  useEffect(() => {
+    let interval: any = null;
+    if (snoozeTimer && snoozeTimer.active) {
+      interval = setInterval(() => {
+        setSnoozeTimer(prev => {
+          if (!prev || !prev.active) return null;
+          if (prev.remainingSeconds <= 1) {
+            handleSnoozeExpire();
+            return null;
+          }
+          return { ...prev, remainingSeconds: prev.remainingSeconds - 1 };
+        });
+      }, 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [snoozeTimer?.active]);
+
+  const handleSnoozeExpire = async () => {
+    playAlexaChime('alert');
+    // Set Eliquis back to missed so alert card re-opens automatically!
+    setMedications(prev => prev.map(m => m.id === 'med-3' ? { ...m, status: 'missed' } : m));
+    setVitals(prev => ({ ...prev, systolicBP: 148, diastolicBP: 94 }));
+
+    const reAlertSpeech = "Eleanor, your 15-minute snooze has ended. A quick reminder: Your evening Eliquis anticoagulant in dispenser slot 3 is still pending. Please take it now with a glass of water.";
+    setLastExecution({
+      speechOutput: reAlertSpeech,
+      steps: [
+        {
+          step: 1,
+          timestamp: new Date().toISOString(),
+          thought: '⏰ Snooze timer expired: Dispenser slot 3 remains unverified. Re-alerting Eleanor via audio and visual prompt on Echo Show 15.',
+          speechOutput: reAlertSpeech
+        }
+      ],
+      status: 'resolved',
+      usedLiveBedrock: false
+    });
+    speakAlexaVoice(reAlertSpeech);
+  };
+
+  const handleFastForwardSnooze = () => {
+    if (!snoozeTimer) return;
+    setSnoozeTimer(prev => prev ? { ...prev, remainingSeconds: 3 } : null);
+  };
+
   // Medication Direct Actions
   const handleConfirmMedication = async (medId: string = 'med-3') => {
     setIsProcessing(true);
     playAlexaChime('success');
+    setSnoozeTimer(null); // Cancel any active snooze timer
 
     // Optimistic UI update immediately
     setMedications(prev => prev.map(m => m.id === medId ? { ...m, status: 'taken' } : m));
@@ -201,6 +251,14 @@ export default function App() {
 
     // Optimistic UI update immediately
     setMedications(prev => prev.map(m => m.id === medId ? { ...m, status: 'pending' } : m));
+
+    // Arm the real 15-minute (900 seconds) snooze timer
+    setSnoozeTimer({
+      active: true,
+      remainingSeconds: 15 * 60,
+      medicationName: 'Eliquis (Apixaban)',
+      dispenserSlot: 3
+    });
 
     try {
       const res = await fetch('/api/medications/snooze', {
@@ -371,6 +429,8 @@ export default function App() {
                   onCancelFalseAlarm={handleCancelFalseAlarm}
                   onDispatchAmbulanceNow={handleDispatchAmbulanceNow}
                   onDropInCall={handleDropInCall}
+                  snoozeState={snoozeTimer}
+                  onFastForwardSnooze={handleFastForwardSnooze}
                 />
               </div>
 
@@ -406,6 +466,8 @@ export default function App() {
               onCancelFalseAlarm={handleCancelFalseAlarm}
               onDispatchAmbulanceNow={handleDispatchAmbulanceNow}
               onDropInCall={handleDropInCall}
+              snoozeState={snoozeTimer}
+              onFastForwardSnooze={handleFastForwardSnooze}
             />
           </div>
         )}

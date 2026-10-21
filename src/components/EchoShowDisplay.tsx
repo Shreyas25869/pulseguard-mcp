@@ -3,9 +3,9 @@ import {
   Heart, Activity, Pill, ShieldCheck, ShieldAlert, KeyRound, 
   Video, Mic, AlertTriangle, Clock, MapPin, CheckCircle2, UserCheck,
   CloudSun, Bell, Volume2, Shield, FileText, PhoneCall, PhoneOff, X, 
-  AlertOctagon, Check, Sparkles
+  AlertOctagon, Check, Sparkles, Zap
 } from 'lucide-react';
-import { PatientVitals, MedicationItem, RingSecurityState, AgentExecutionResult } from '../types.ts';
+import { PatientVitals, MedicationItem, RingSecurityState, AgentExecutionResult, SnoozeTimerState } from '../types.ts';
 import { ECGWaveform } from './ECGWaveform.tsx';
 
 interface EchoShowDisplayProps {
@@ -20,6 +20,8 @@ interface EchoShowDisplayProps {
   onCancelFalseAlarm?: () => void;
   onDispatchAmbulanceNow?: () => void;
   onDropInCall?: () => void;
+  snoozeState?: SnoozeTimerState | null;
+  onFastForwardSnooze?: () => void;
 }
 
 export const EchoShowDisplay: React.FC<EchoShowDisplayProps> = ({
@@ -33,7 +35,9 @@ export const EchoShowDisplay: React.FC<EchoShowDisplayProps> = ({
   onSnoozeMedication,
   onCancelFalseAlarm,
   onDispatchAmbulanceNow,
-  onDropInCall
+  onDropInCall,
+  snoozeState,
+  onFastForwardSnooze
 }) => {
   const [showMedicalFile, setShowMedicalFile] = useState(false);
   const [showDropInCall, setShowDropInCall] = useState(false);
@@ -441,6 +445,33 @@ export const EchoShowDisplay: React.FC<EchoShowDisplayProps> = ({
             ) : (
               /* AMBIENT LIVING ROOM VIEW */
               <div className="text-center py-6 px-4">
+                {/* ACTIVE SNOOZE TIMER WIDGET */}
+                {snoozeState?.active && (
+                  <div className="max-w-md mx-auto mb-4 p-3.5 rounded-2xl bg-amber-950/50 border border-amber-600/70 text-amber-200 flex items-center justify-between shadow-xl">
+                    <div className="flex items-center gap-2.5">
+                      <Clock className="w-4 h-4 text-amber-400 animate-spin" />
+                      <div className="text-left">
+                        <span className="text-xs font-bold block">{snoozeState.medicationName} Reminder Snoozed</span>
+                        <span className="text-[11px] text-amber-300 font-mono">
+                          Re-alerting in: <span className="font-bold text-white bg-slate-900 px-1.5 py-0.5 rounded border border-amber-700">
+                            {Math.floor(snoozeState.remainingSeconds / 60)}:{snoozeState.remainingSeconds % 60 < 10 ? `0${snoozeState.remainingSeconds % 60}` : snoozeState.remainingSeconds % 60}
+                          </span> min (Slot {snoozeState.dispenserSlot})
+                        </span>
+                      </div>
+                    </div>
+                    {onFastForwardSnooze && (
+                      <button
+                        onClick={onFastForwardSnooze}
+                        className="px-2.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-[11px] font-bold flex items-center gap-1 transition-all cursor-pointer shadow-md"
+                        title="Fast-forward timer to 3 seconds for live demo"
+                      >
+                        <Zap className="w-3.5 h-3.5" />
+                        <span>Fast-Forward 3s</span>
+                      </button>
+                    )}
+                  </div>
+                )}
+
                 <div className="w-16 h-16 rounded-2xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center mx-auto mb-3 glow-blue">
                   <ShieldCheck className="w-8 h-8 text-sky-400" />
                 </div>

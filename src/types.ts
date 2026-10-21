@@ -62,3 +62,10 @@ export interface AgentExecutionResult {
   status: 'resolved' | 'escalated' | 'monitoring';
   usedLiveBedrock: boolean;
 }
+
+export interface SnoozeTimerState {
+  active: boolean;
+  remainingSeconds: number;
+  medicationName: string;
+  dispenserSlot: number;
+}
