@@ -99,6 +99,44 @@ app.post('/api/trigger-scenario', async (req, res) => {
   });
 });
 
+// 3b. Medication Direct Actions (Confirm Dose / Snooze)
+app.post('/api/medications/confirm', async (req, res) => {
+  const { medicationId = 'med-3' } = req.body;
+  telemetryState.updateMedication(medicationId, { status: 'taken' });
+  telemetryState.updateVitals({
+    systolicBP: 122,
+    diastolicBP: 80,
+    heartRate: 74
+  });
+  const agentExecution = await bedrockAgent.runAgentReasoning("Patient Eleanor Vance confirmed ingestion of Eliquis dose");
+  res.json({
+    success: true,
+    agentExecution,
+    currentState: {
+      vitals: telemetryState.getVitals(),
+      medications: telemetryState.getMedications(),
+      ring: telemetryState.getRingSecurity(),
+      auditLogs: telemetryState.getAuditLogs()
+    }
+  });
+});
+
+app.post('/api/medications/snooze', async (req, res) => {
+  const { medicationId = 'med-3' } = req.body;
+  telemetryState.updateMedication(medicationId, { status: 'pending' });
+  const agentExecution = await bedrockAgent.runAgentReasoning("Remind me again in 15 minutes for medication");
+  res.json({
+    success: true,
+    agentExecution,
+    currentState: {
+      vitals: telemetryState.getVitals(),
+      medications: telemetryState.getMedications(),
+      ring: telemetryState.getRingSecurity(),
+      auditLogs: telemetryState.getAuditLogs()
+    }
+  });
+});
+
 // 4. Alexa+ Voice / Chat Interaction (Runs full Bedrock MCP Tool reasoning loop)
 app.post('/api/chat', async (req, res) => {
   const { prompt } = req.body;

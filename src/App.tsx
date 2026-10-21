@@ -160,6 +160,74 @@ export default function App() {
     }
   };
 
+  // Medication Direct Actions
+  const handleConfirmMedication = async (medId: string = 'med-3') => {
+    setIsProcessing(true);
+    playAlexaChime('success');
+
+    // Optimistic UI update immediately
+    setMedications(prev => prev.map(m => m.id === medId ? { ...m, status: 'taken' } : m));
+    setVitals(prev => ({ ...prev, systolicBP: 122, diastolicBP: 80, heartRate: 74 }));
+
+    try {
+      const res = await fetch('/api/medications/confirm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ medicationId: medId })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setVitals(data.currentState.vitals);
+        setMedications(data.currentState.medications);
+        setRing(data.currentState.ring);
+        setAuditLogs(data.currentState.auditLogs);
+        if (data.agentExecution) {
+          setLastExecution(data.agentExecution);
+          if (data.agentExecution.speechOutput) {
+            speakAlexaVoice(data.agentExecution.speechOutput);
+          }
+        }
+      }
+    } catch (err) {
+      console.error('Failed to confirm dose:', err);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleSnoozeMedication = async (medId: string = 'med-3') => {
+    setIsProcessing(true);
+    playAlexaChime('wake');
+
+    // Optimistic UI update immediately
+    setMedications(prev => prev.map(m => m.id === medId ? { ...m, status: 'pending' } : m));
+
+    try {
+      const res = await fetch('/api/medications/snooze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ medicationId: medId })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setVitals(data.currentState.vitals);
+        setMedications(data.currentState.medications);
+        setRing(data.currentState.ring);
+        setAuditLogs(data.currentState.auditLogs);
+        if (data.agentExecution) {
+          setLastExecution(data.agentExecution);
+          if (data.agentExecution.speechOutput) {
+            speakAlexaVoice(data.agentExecution.speechOutput);
+          }
+        }
+      }
+    } catch (err) {
+      console.error('Failed to snooze dose:', err);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   // Remote Ring deadbolt toggle
   const handleToggleLock = async () => {
     try {
@@ -208,6 +276,8 @@ export default function App() {
                   lastExecution={lastExecution}
                   isProcessing={isProcessing}
                   onQuickAction={handleCustomPrompt}
+                  onConfirmMedication={handleConfirmMedication}
+                  onSnoozeMedication={handleSnoozeMedication}
                 />
               </div>
 
@@ -238,6 +308,8 @@ export default function App() {
               lastExecution={lastExecution}
               isProcessing={isProcessing}
               onQuickAction={handleCustomPrompt}
+              onConfirmMedication={handleConfirmMedication}
+              onSnoozeMedication={handleSnoozeMedication}
             />
           </div>
         )}

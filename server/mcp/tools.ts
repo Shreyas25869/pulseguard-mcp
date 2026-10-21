@@ -40,6 +40,28 @@ export const BEDROCK_TOOL_DEFINITIONS = [
   },
   {
     toolSpec: {
+      name: 'confirm_patient_medication_intake',
+      description: 'Records patient verification of medication ingestion, marks the smart dispenser slot as taken, and normalizes cardiovascular stress telemetry.',
+      inputSchema: {
+        json: {
+          type: 'object',
+          properties: {
+            medicationId: {
+              type: 'string',
+              description: 'The unique medication ID (e.g. med-3)'
+            },
+            notes: {
+              type: 'string',
+              description: 'Optional clinical observation or patient verification notes'
+            }
+          },
+          required: ['medicationId']
+        }
+      }
+    }
+  },
+  {
+    toolSpec: {
       name: 'control_ring_security',
       description: 'Interacts with Ring Video Doorbell and Ring Smart Deadbolt to view live perimeter camera status, unlock the front door for verified emergency responders or caregivers, or broadcast intercom voice.',
       inputSchema: {
@@ -164,6 +186,39 @@ export function registerMcpTools(server: McpServer) {
               totalPrescriptions: meds.length,
               adherenceStatus: meds.every(m => m.status === 'taken') ? 'all_compliant' : 'action_required',
               medications: meds
+            }, null, 2)
+          }
+        ]
+      };
+    }
+  );
+
+  // 2b. Confirm Medication Intake Tool
+  server.tool(
+    'confirm_patient_medication_intake',
+    {
+      medicationId: z.string().describe('Medication ID to confirm as taken'),
+      notes: z.string().optional().describe('Optional observation notes')
+    },
+    async ({ medicationId, notes }) => {
+      const updated = telemetryState.updateMedication(medicationId, { status: 'taken' });
+      telemetryState.updateVitals({
+        systolicBP: 122,
+        diastolicBP: 80,
+        heartRate: 74
+      });
+      return {
+        content: [
+          {
+            type: 'text',
+            text: JSON.stringify({
+              status: 'success',
+              medicationId,
+              medicationName: updated?.name,
+              dispenserSlot: updated?.dispenserSlot,
+              complianceStatus: 'taken',
+              adherenceRate: '100%',
+              message: 'Dose logged into cloud care store. Dispenser slot cleared.'
             }, null, 2)
           }
         ]
@@ -337,6 +392,25 @@ export async function executeToolDirectly(toolName: string, args: Record<string,
         totalPrescriptions: meds.length,
         adherenceStatus: meds.every(m => m.status === 'taken') ? 'all_compliant' : 'action_required',
         medications: meds
+      };
+    }
+
+    case 'confirm_patient_medication_intake': {
+      const { medicationId = 'med-3' } = args;
+      const updatedMed = telemetryState.updateMedication(medicationId, { status: 'taken' });
+      telemetryState.updateVitals({
+        systolicBP: 122,
+        diastolicBP: 80,
+        heartRate: 74
+      });
+      return {
+        status: 'success',
+        medicationId,
+        medicationName: updatedMed?.name || 'Eliquis (Apixaban)',
+        dispenserSlot: updatedMed?.dispenserSlot || 3,
+        complianceStatus: 'taken',
+        adherenceRate: '100%',
+        message: 'Dose logged into cloud care store. Dispenser slot cleared.'
       };
     }
 

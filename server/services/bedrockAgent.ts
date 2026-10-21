@@ -1,6 +1,7 @@
 import { BedrockRuntimeClient, ConverseCommand } from '@aws-sdk/client-bedrock-runtime';
 import { BEDROCK_TOOL_DEFINITIONS, executeToolDirectly } from '../mcp/tools.js';
 import { AgentActionStep } from '../mcp/types.js';
+import { telemetryState } from './telemetryState.js';
 
 interface AgentExecutionResult {
   speechOutput: string;
@@ -242,6 +243,107 @@ When an alert or query occurs:
         speechOutput: speech,
         steps,
         status: 'escalated',
+        usedLiveBedrock: false
+      };
+    }
+
+    // --- 1. Dose Confirmation Check (Triggered by 'Confirm Dose Taken' or spoken confirmation) ---
+    if (
+      lower.includes('took') ||
+      lower.includes('taken') ||
+      lower.includes('swallowed') ||
+      lower.includes('confirm dose') ||
+      lower.includes('confirm') ||
+      lower.includes('already took') ||
+      lower.includes('i took')
+    ) {
+      // Execute MCP Tool to update dispenser and normalize vitals
+      const confirmResult = await executeToolDirectly('confirm_patient_medication_intake', {
+        medicationId: 'med-3',
+        notes: 'Confirmed by Eleanor Vance via Echo Show 15 touch'
+      });
+
+      steps.push({
+        step: 1,
+        timestamp: new Date().toISOString(),
+        thought: '✅ Ingestion verified: Invoking confirm_patient_medication_intake to mark smart dispenser slot 3 as compliant and normalize telemetry.',
+        toolCall: {
+          name: 'confirm_patient_medication_intake',
+          arguments: { medicationId: 'med-3' }
+        },
+        toolResult: confirmResult
+      });
+
+      // Log to DynamoDB Care Ledger
+      const auditResult = await executeToolDirectly('record_care_event_log', {
+        eventType: 'ambient_check',
+        severity: 'info',
+        summary: 'Eliquis 5mg confirmed taken. Daily medication adherence restored to 100%.',
+        outcome: 'Dispenser slot 3 cleared. Eleanor vitals normalized (BP 122/80, HR 74).'
+      });
+
+      steps.push({
+        step: 2,
+        timestamp: new Date().toISOString(),
+        thought: '📋 Ledger committed: Invoking record_care_event_log to update DynamoDB adherence record.',
+        toolCall: {
+          name: 'record_care_event_log',
+          arguments: { eventType: 'ambient_check', severity: 'info', summary: 'Dose taken confirmed' }
+        },
+        toolResult: auditResult
+      });
+
+      const speech = "Wonderful, Eleanor! I have recorded your Eliquis dose as taken, and your daughter Sarah has been notified. Your blood pressure and heart rate are steady, and all your medications for today are complete.";
+      steps.push({
+        step: 3,
+        timestamp: new Date().toISOString(),
+        thought: 'Agent synthesized warm confirmation response and returned Echo Show 15 to peaceful ambient mode.',
+        speechOutput: speech
+      });
+
+      return {
+        speechOutput: speech,
+        steps,
+        status: 'resolved',
+        usedLiveBedrock: false
+      };
+    }
+
+    // --- 2. Snooze Reminder Check ---
+    if (lower.includes('snooze') || lower.includes('15 minutes') || lower.includes('later') || lower.includes('remind me again')) {
+      // Reset to pending so alert is dismissed
+      telemetryState.updateMedication('med-3', { status: 'pending' });
+
+      const updateResult = await executeToolDirectly('record_care_event_log', {
+        eventType: 'medication_warning',
+        severity: 'info',
+        summary: 'Eliquis 5mg reminder snoozed for 15 minutes by Eleanor.',
+        outcome: 'Follow-up reminder timer armed. Display alert cleared temporarily.'
+      });
+
+      steps.push({
+        step: 1,
+        timestamp: new Date().toISOString(),
+        thought: '⏰ Snooze requested: Setting 15-minute re-evaluation timer for Eliquis anticoagulant reminder.',
+        toolCall: {
+          name: 'record_care_event_log',
+          arguments: { eventType: 'medication_warning', severity: 'info', summary: 'Snoozed 15 min' }
+        },
+        toolResult: updateResult
+      });
+
+      const speech = "Understood, Eleanor. I will remind you again in 15 minutes. Please be sure to drink a glass of water when you take it.";
+      steps.push({
+        step: 2,
+        timestamp: new Date().toISOString(),
+        thought: 'Agent acknowledged snooze request and dismissed alert on screen.',
+        speechOutput: speech
+      });
+
+      return {
+        speechOutput: speech,
+        steps,
+        status: 'resolved',
         usedLiveBedrock: false
       };
     }

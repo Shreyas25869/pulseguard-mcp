@@ -14,6 +14,8 @@ interface EchoShowDisplayProps {
   lastExecution: AgentExecutionResult | null;
   isProcessing: boolean;
   onQuickAction: (actionPrompt: string) => void;
+  onConfirmMedication?: (medId: string) => void;
+  onSnoozeMedication?: (medId: string) => void;
 }
 
 export const EchoShowDisplay: React.FC<EchoShowDisplayProps> = ({
@@ -22,7 +24,9 @@ export const EchoShowDisplay: React.FC<EchoShowDisplayProps> = ({
   ring,
   lastExecution,
   isProcessing,
-  onQuickAction
+  onQuickAction,
+  onConfirmMedication,
+  onSnoozeMedication
 }) => {
   const isEmergency = vitals.fallDetected || vitals.heartRate > 130;
   const missedMed = medications.find(m => m.status === 'missed');
@@ -229,17 +233,48 @@ export const EchoShowDisplay: React.FC<EchoShowDisplayProps> = ({
 
                 <div className="flex gap-2.5">
                   <button
-                    onClick={() => onQuickAction("I just took my Eliquis medication now")}
-                    className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-md transition-all"
+                    onClick={() => {
+                      if (onConfirmMedication) {
+                        onConfirmMedication(missedMed.id);
+                      } else {
+                        onQuickAction("I just took my Eliquis medication now");
+                      }
+                    }}
+                    disabled={isProcessing}
+                    className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-md transition-all flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
                   >
-                    Confirm Dose Taken
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    <span>Confirm Dose Taken</span>
                   </button>
                   <button
-                    onClick={() => onQuickAction("Remind me again in 15 minutes")}
-                    className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 transition-all"
+                    onClick={() => {
+                      if (onSnoozeMedication) {
+                        onSnoozeMedication(missedMed.id);
+                      } else {
+                        onQuickAction("Remind me again in 15 minutes");
+                      }
+                    }}
+                    disabled={isProcessing}
+                    className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 transition-all disabled:opacity-50 cursor-pointer"
                   >
                     Snooze 15 min
                   </button>
+                </div>
+              </div>
+            ) : lastExecution?.speechOutput?.includes("Eliquis dose as taken") ? (
+              /* DOSE CONFIRMED SUCCESS CARD */
+              <div className="bg-emerald-950/40 border-2 border-emerald-600/80 rounded-3xl p-5 shadow-xl text-center">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-600/30 border border-emerald-500 flex items-center justify-center mx-auto mb-3">
+                  <CheckCircle2 className="w-7 h-7 text-emerald-400" />
+                </div>
+                <h3 className="text-lg font-bold text-emerald-100 mb-1">
+                  Eliquis Dose Confirmed & Verified
+                </h3>
+                <p className="text-xs text-emerald-300 mb-3 font-mono">
+                  Dispenser Slot 3 cleared · Daily Adherence 100% · Telemetry Restored
+                </p>
+                <div className="max-w-md mx-auto bg-slate-950/80 border border-emerald-800/60 rounded-2xl p-3 text-xs text-slate-200 italic">
+                  "{lastExecution.speechOutput}"
                 </div>
               </div>
             ) : ring.visitorType === 'first_responder' ? (
