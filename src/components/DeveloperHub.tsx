@@ -19,8 +19,8 @@ export const DeveloperHub: React.FC<DeveloperHubProps> = ({
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       {/* Top Architecture Overview Banner */}
-      <div className="p-5 rounded-3xl bg-white border border-slate-200 shadow-sm">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 pb-4 border-b border-slate-200">
+      <div className="p-5 rounded-3xl glass-panel shadow-sm">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 pb-4 border-b border-slate-200/70">
           <div>
             <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
               <Terminal className="w-5 h-5 text-sky-600" />
@@ -32,10 +32,10 @@ export const DeveloperHub: React.FC<DeveloperHubProps> = ({
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-xs px-2.5 py-1 rounded-xl bg-sky-50 border border-sky-200 text-sky-700 font-mono flex items-center gap-1.5 font-medium">
+            <span className="glass-pill text-xs px-2.5 py-1 rounded-xl text-sky-700 font-mono flex items-center gap-1.5 font-medium shadow-2xs">
               <Cpu className="w-3.5 h-3.5 text-cyan-600" /> Bedrock Nova-Pro
             </span>
-            <span className="text-xs px-2.5 py-1 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 font-mono">
+            <span className="glass-pill text-xs px-2.5 py-1 rounded-xl text-slate-700 font-mono shadow-2xs">
               MCP Standard 2024-11-05
             </span>
           </div>
@@ -43,19 +43,19 @@ export const DeveloperHub: React.FC<DeveloperHubProps> = ({
 
         {/* Technical Flow Map */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs font-mono">
-          <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 shadow-xs">
+          <div className="p-3 rounded-2xl glass-card border-slate-200/80 shadow-xs">
             <span className="text-sky-700 font-bold block mb-1">1. Ambient Ingest</span>
             <span className="text-slate-600 text-[11px]">Wearable 3.85G fall & tachycardia telemetry</span>
           </div>
-          <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 shadow-xs">
+          <div className="p-3 rounded-2xl glass-card border-slate-200/80 shadow-xs">
             <span className="text-amber-700 font-bold block mb-1">2. Bedrock Converse</span>
             <span className="text-slate-600 text-[11px]">Evaluates clinical risk & selects MCP tools</span>
           </div>
-          <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 shadow-xs">
+          <div className="p-3 rounded-2xl glass-card border-slate-200/80 shadow-xs">
             <span className="text-cyan-700 font-bold block mb-1">3. MCP Server (/mcp/sse)</span>
             <span className="text-slate-600 text-[11px]">Executes smart deadbolt & emergency staging</span>
           </div>
-          <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 shadow-xs">
+          <div className="p-3 rounded-2xl glass-card border-slate-200/80 shadow-xs">
             <span className="text-teal-700 font-bold block mb-1">4. Cloud Ledger</span>
             <span className="text-slate-600 text-[11px]">Commits SBAR audit hash to DynamoDB table</span>
           </div>

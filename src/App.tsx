@@ -390,7 +390,14 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-['Plus_Jakarta_Sans',sans-serif]">
+    <div className="min-h-screen relative flex flex-col font-['Plus_Jakarta_Sans',sans-serif] text-slate-900 selection:bg-sky-500/20 selection:text-sky-900">
+      {/* Subtle ambient glass background glows */}
+      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-sky-300/20 blur-3xl"></div>
+        <div className="absolute top-1/4 -right-32 w-96 h-96 rounded-full bg-cyan-300/20 blur-3xl"></div>
+        <div className="absolute bottom-10 left-1/3 w-[30rem] h-[30rem] rounded-full bg-blue-200/25 blur-3xl"></div>
+      </div>
+
       {/* Top Navigation Bar with View Switcher */}
       <Header
         viewMode={viewMode}
@@ -495,7 +502,7 @@ export default function App() {
       </main>
 
       {/* Professional Footer */}
-      <footer className="border-t border-slate-200 bg-white/80 py-4 px-6 text-center text-xs text-slate-500 font-mono flex flex-col sm:flex-row items-center justify-between gap-2 max-w-7xl mx-auto w-full">
+      <footer className="border-t border-white/80 bg-white/60 backdrop-blur-md py-4 px-6 text-center text-xs text-slate-500 font-mono flex flex-col sm:flex-row items-center justify-between gap-2 max-w-7xl mx-auto w-full mt-4">
         <div>
           <span className="text-slate-800 font-semibold">PulseGuard MCP</span> · Amazon Developer Hackathon 2026: Build, Ship, Shape
         </div>

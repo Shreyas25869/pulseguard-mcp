@@ -71,30 +71,30 @@ export const EchoShowDisplay: React.FC<EchoShowDisplayProps> = ({
   }, [vitals.fallDetected]);
 
   return (
-    <div className="relative rounded-[2.2rem] p-3 bg-gradient-to-b from-slate-200 via-slate-300 to-slate-400 shadow-xl border border-slate-300/80 transition-all">
+    <div className="relative rounded-[2.6rem] p-3.5 bg-gradient-to-b from-slate-200 via-slate-100 to-slate-200 shadow-2xl border border-white/80 ring-1 ring-slate-300/70 shadow-slate-400/20 transition-all">
       {/* Echo Show Bezel Frame */}
-      <div className="rounded-[1.8rem] bg-white overflow-hidden border border-slate-300 shadow-inner flex flex-col min-h-[560px]">
+      <div className="rounded-[2.1rem] bg-gradient-to-b from-white/95 via-sky-50/25 to-white/95 backdrop-blur-xl overflow-hidden border border-slate-200/90 shadow-inner flex flex-col min-h-[570px]">
         
         {/* Device Top Bar: Camera notch, Time, Status */}
-        <div className="bg-slate-50 px-6 py-2.5 border-b border-slate-200 flex items-center justify-between">
+        <div className="bg-white/60 backdrop-blur-md px-6 py-2.5 border-b border-slate-200/70 flex items-center justify-between">
           <div className="flex items-center gap-3">
             {/* Camera lens hole */}
-            <div className="w-2.5 h-2.5 rounded-full bg-slate-200 border border-slate-300 flex items-center justify-center">
-              <span className="w-1 h-1 rounded-full bg-sky-500"></span>
+            <div className="w-3 h-3 rounded-full bg-slate-200 border border-slate-300/80 flex items-center justify-center shadow-inner">
+              <span className="w-1.5 h-1.5 rounded-full bg-sky-500 shadow-xs"></span>
             </div>
             <span className="text-[11px] font-semibold tracking-wider text-slate-600 uppercase font-mono">
               Echo Show 15 · Wall Display
             </span>
           </div>
 
-          <div className="flex items-center gap-4 text-xs text-slate-600 font-mono">
-            <span className="flex items-center gap-1.5 text-slate-500">
+          <div className="flex items-center gap-2 sm:gap-3 text-xs text-slate-600 font-mono">
+            <span className="glass-pill px-2.5 py-0.5 rounded-lg flex items-center gap-1.5 text-slate-600 shadow-2xs">
               <CloudSun className="w-3.5 h-3.5 text-amber-500" /> 71°F Seattle
             </span>
-            <span className="flex items-center gap-1 text-slate-500">
+            <span className="glass-pill px-2.5 py-0.5 rounded-lg flex items-center gap-1 text-slate-600 shadow-2xs">
               <MapPin className="w-3.5 h-3.5 text-sky-600" /> {vitals.currentRoom}
             </span>
-            <span className="flex items-center gap-1 text-slate-800 font-bold">
+            <span className="glass-pill px-2.5 py-0.5 rounded-lg flex items-center gap-1 text-slate-800 font-bold shadow-2xs">
               <Clock className="w-3.5 h-3.5 text-slate-400" /> 
               {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </span>
@@ -102,15 +102,15 @@ export const EchoShowDisplay: React.FC<EchoShowDisplayProps> = ({
         </div>
 
         {/* Display Canvas */}
-        <div className="p-5 flex-1 flex flex-col justify-between bg-white relative">
+        <div className="p-5 flex-1 flex flex-col justify-between bg-gradient-to-b from-white/80 via-white/40 to-white/90 relative">
           
           {/* TOP SECTION: Patient Vitals & Live Cardiac Telemetry */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 mb-4">
             {/* Heart Rate + Live ECG */}
             <div className={`p-3 rounded-2xl border transition-all ${
               vitals.heartRate > 120 
-                ? 'bg-red-50 border-red-300 text-red-900' 
-                : 'bg-slate-50 border-slate-200 text-slate-800'
+                ? 'bg-red-500/10 border-red-300 text-red-950 shadow-sm' 
+                : 'glass-card border-slate-200/70 text-slate-800 hover:border-sky-300 transition-all'
             }`}>
               <div className="flex items-center justify-between text-[11px] text-slate-500 mb-1">
                 <span className="font-medium">Heart Rate</span>
@@ -125,7 +125,7 @@ export const EchoShowDisplay: React.FC<EchoShowDisplayProps> = ({
             </div>
 
             {/* Blood Oxygen SpO2 */}
-            <div className="p-3 rounded-2xl border bg-slate-50 border-slate-200 text-slate-800">
+            <div className="p-3 rounded-2xl border glass-card border-slate-200/70 text-slate-800 hover:border-sky-300 transition-all">
               <div className="flex items-center justify-between text-[11px] text-slate-500 mb-1">
                 <span className="font-medium">Blood Oxygen</span>
                 <Activity className="w-3.5 h-3.5 text-sky-600" />
@@ -142,8 +142,8 @@ export const EchoShowDisplay: React.FC<EchoShowDisplayProps> = ({
             {/* Posture & Motion */}
             <div className={`p-3 rounded-2xl border transition-all ${
               vitals.fallDetected 
-                ? 'bg-red-50 border-red-300 text-red-900' 
-                : 'bg-slate-50 border-slate-200 text-slate-800'
+                ? 'bg-red-500/10 border-red-300 text-red-950 shadow-sm' 
+                : 'glass-card border-slate-200/70 text-slate-800 hover:border-sky-300 transition-all'
             }`}>
               <div className="flex items-center justify-between text-[11px] text-slate-500 mb-1">
                 <span className="font-medium">Body Posture</span>
@@ -164,8 +164,8 @@ export const EchoShowDisplay: React.FC<EchoShowDisplayProps> = ({
             {/* Ring Smart Deadbolt */}
             <div className={`p-3 rounded-2xl border transition-all ${
               ring.doorLockState === 'unlocked'
-                ? 'bg-amber-50 border-amber-300 text-amber-900'
-                : 'bg-slate-50 border-slate-200 text-slate-800'
+                ? 'bg-amber-500/10 border-amber-300 text-amber-950 shadow-sm' 
+                : 'glass-card border-slate-200/70 text-slate-800 hover:border-sky-300 transition-all'
             }`}>
               <div className="flex items-center justify-between text-[11px] text-slate-500 mb-1">
                 <span className="font-medium">Ring Perimeter</span>
@@ -448,7 +448,7 @@ export const EchoShowDisplay: React.FC<EchoShowDisplayProps> = ({
               <div className="text-center py-6 px-4">
                 {/* ACTIVE SNOOZE TIMER WIDGET */}
                 {snoozeState?.active && (
-                  <div className="max-w-md mx-auto mb-4 p-3.5 rounded-2xl bg-amber-50 border border-amber-300 text-amber-900 flex items-center justify-between shadow-sm">
+                  <div className="glass-card max-w-md mx-auto mb-4 p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-orange-500/5 to-white/70 border-amber-300 text-amber-950 flex items-center justify-between shadow-sm">
                     <div className="flex items-center gap-2.5">
                       <Clock className="w-4 h-4 text-amber-600 animate-spin" />
                       <div className="text-left">
@@ -473,7 +473,7 @@ export const EchoShowDisplay: React.FC<EchoShowDisplayProps> = ({
                   </div>
                 )}
 
-                <div className="w-16 h-16 rounded-2xl bg-sky-50 border border-sky-200 flex items-center justify-center mx-auto mb-3 glow-blue">
+                <div className="w-16 h-16 rounded-3xl bg-gradient-to-tr from-sky-400/20 to-cyan-400/25 backdrop-blur-md border border-sky-300/40 flex items-center justify-center mx-auto mb-3 shadow-lg shadow-sky-400/15 text-sky-600 glow-blue">
                   <ShieldCheck className="w-8 h-8 text-sky-600" />
                 </div>
                 <h2 className="text-xl font-bold text-slate-900 mb-1.5">
@@ -484,7 +484,7 @@ export const EchoShowDisplay: React.FC<EchoShowDisplayProps> = ({
                 </p>
 
                 {lastExecution?.speechOutput && (
-                  <div className="max-w-md mx-auto bg-slate-50 border border-slate-200 rounded-2xl p-3 text-xs text-slate-700 italic shadow-xs">
+                  <div className="glass-card max-w-md mx-auto rounded-2xl p-3.5 text-xs text-slate-700 italic border border-slate-200/80 shadow-xs">
                     <span className="text-sky-600 font-semibold not-italic block mb-0.5">Alexa+ Response:</span>
                     "{lastExecution.speechOutput}"
                   </div>
@@ -494,14 +494,14 @@ export const EchoShowDisplay: React.FC<EchoShowDisplayProps> = ({
           </div>
 
           {/* BOTTOM ALEXA LIGHT BAR: Signature Echo Show LED Glow */}
-          <div className="pt-3 border-t border-slate-200 flex items-center justify-between">
+          <div className="pt-3 border-t border-slate-200/70 bg-white/40 backdrop-blur-sm px-2 flex items-center justify-between rounded-b-2xl">
             <div className="flex items-center gap-3">
               <div className="relative flex items-center justify-center">
                 <div className={`w-3.5 h-3.5 rounded-full ${
-                  isEmergency ? 'bg-red-500 shadow-md shadow-red-500/80' : 'bg-sky-500 shadow-md shadow-sky-500/80'
+                  isEmergency ? 'bg-red-500 shadow-md shadow-red-500/80' : 'bg-sky-500 shadow-md shadow-sky-400/80'
                 } ${isProcessing ? 'animate-ping' : ''}`}></div>
               </div>
-              <span className="text-xs font-mono text-slate-600">
+              <span className="text-xs font-mono text-slate-600 font-medium">
                 {isProcessing ? 'Alexa+ reasoning over Model Context Protocol...' : 'Alexa+ Active in Home'}
               </span>
             </div>
@@ -512,8 +512,8 @@ export const EchoShowDisplay: React.FC<EchoShowDisplayProps> = ({
                 <span
                   key={i}
                   className={`w-1 rounded-full transition-all duration-300 ${
-                    isEmergency ? 'bg-red-500' : 'bg-sky-500'
-                  } ${isProcessing ? 'animate-wave' : 'opacity-40'}`}
+                    isEmergency ? 'bg-red-500' : 'bg-gradient-to-t from-sky-500 to-cyan-400'
+                  } ${isProcessing ? 'animate-wave' : 'opacity-50'}`}
                   style={{ height: `${isProcessing ? h : 30}%` }}
                 ></span>
               ))}

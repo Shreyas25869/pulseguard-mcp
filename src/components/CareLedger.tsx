@@ -8,7 +8,7 @@ interface CareLedgerProps {
 
 export const CareLedger: React.FC<CareLedgerProps> = ({ logs }) => {
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white shadow-sm p-5">
+    <div className="glass-panel rounded-3xl p-5 shadow-sm">
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
@@ -18,7 +18,7 @@ export const CareLedger: React.FC<CareLedgerProps> = ({ logs }) => {
             Immutable incident audits & caregiver handoff logs
           </p>
         </div>
-        <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-slate-700 font-mono">
+        <span className="glass-pill text-[10px] px-2.5 py-0.5 rounded-full text-slate-700 font-mono shadow-2xs">
           Table: pulseguard_care_events
         </span>
       </div>
@@ -33,10 +33,10 @@ export const CareLedger: React.FC<CareLedgerProps> = ({ logs }) => {
               key={entry.id}
               className={`p-3 rounded-2xl border text-xs transition-all shadow-xs ${
                 isCritical
-                  ? 'bg-red-50 border-red-200 text-red-900'
+                  ? 'bg-gradient-to-r from-red-500/15 via-rose-500/10 to-white/80 backdrop-blur-md border-red-300 text-red-950'
                   : isWarning
-                  ? 'bg-amber-50 border-amber-200 text-amber-900'
-                  : 'bg-slate-50 border-slate-200 text-slate-800'
+                  ? 'bg-gradient-to-r from-amber-500/15 via-orange-500/10 to-white/80 backdrop-blur-md border-amber-300 text-amber-950'
+                  : 'glass-card border-slate-200/80 text-slate-800 hover:border-sky-300'
               }`}
             >
               <div className="flex items-center justify-between mb-1.5">
@@ -44,7 +44,7 @@ export const CareLedger: React.FC<CareLedgerProps> = ({ logs }) => {
                   <span className="font-mono text-[10px] font-bold text-sky-700">
                     {entry.id}
                   </span>
-                  <span className="text-[10px] px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700 font-mono uppercase font-semibold">
+                  <span className="glass-pill text-[10px] px-2 py-0.5 rounded text-slate-700 font-mono uppercase font-semibold shadow-2xs">
                     {entry.eventType.replace('_', ' ')}
                   </span>
                 </div>
@@ -59,7 +59,7 @@ export const CareLedger: React.FC<CareLedgerProps> = ({ logs }) => {
                 "{entry.agentReasoning}"
               </p>
 
-              <div className="flex items-center justify-between pt-1.5 border-t border-slate-200/80 text-[10px]">
+              <div className="flex items-center justify-between pt-1.5 border-t border-slate-200/60 text-[10px]">
                 <span className="text-teal-700 font-semibold flex items-center gap-1 font-mono">
                   <ShieldCheck className="w-3 h-3" /> {entry.outcome}
                 </span>
