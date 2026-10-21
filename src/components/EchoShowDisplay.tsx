@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { PatientVitals, MedicationItem, RingSecurityState, AgentExecutionResult, SnoozeTimerState } from '../types.ts';
 import { ECGWaveform } from './ECGWaveform.tsx';
+import { DropInVideoCall } from './DropInVideoCall.tsx';
 
 interface EchoShowDisplayProps {
   vitals: PatientVitals;
@@ -624,54 +625,13 @@ export const EchoShowDisplay: React.FC<EchoShowDisplayProps> = ({
         </div>
       )}
 
-      {/* ALEXA DROP-IN TWO-WAY AUDIO/VIDEO OVERLAY */}
+      {/* REAL-TIME ALEXA DROP-IN WEBRTC VIDEO CALLING SYSTEM */}
       {showDropInCall && (
-        <div className="absolute inset-0 z-50 bg-slate-950/95 backdrop-blur-md rounded-[2.2rem] p-6 flex flex-col justify-between border-2 border-indigo-500/80 shadow-2xl">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-indigo-600/30 border border-indigo-500 flex items-center justify-center">
-                <Video className="w-5 h-5 text-indigo-400" />
-              </div>
-              <div>
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  Emergency Drop-In Call <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 font-mono animate-pulse">LIVE AUDIO/VIDEO</span>
-                </h3>
-                <p className="text-[11px] text-slate-400 font-mono">
-                  Connected to: Sarah Vance (Daughter's iPhone) · Living Room Echo Show 15
-                </p>
-              </div>
-            </div>
-            <span className="text-xs font-mono text-emerald-400 bg-slate-900 px-2 py-1 rounded-lg border border-slate-800">
-              00:18s
-            </span>
-          </div>
-
-          {/* Simulated Video Frame */}
-          <div className="relative rounded-2xl overflow-hidden border border-slate-700 bg-slate-900 h-56 my-3 flex items-center justify-center">
-            <img
-              src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=800&auto=format&fit=crop&q=80"
-              alt="Sarah Vance Drop-In"
-              className="w-full h-full object-cover brightness-95"
-            />
-            <div className="absolute bottom-3 left-3 right-3 p-3 rounded-xl bg-black/80 backdrop-blur-md border border-white/10 text-xs text-white">
-              <p className="font-semibold text-indigo-300 mb-0.5">Sarah Vance Speaking:</p>
-              <p className="italic">"Mom! The alert woke me up! I can see your vitals and that the front door is unlocked. Don't try to stand up, EMS is on the way!"</p>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between pt-2">
-            <div className="flex items-center gap-2 text-xs font-mono text-slate-400">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> Two-way speaker active
-            </div>
-            <button
-              onClick={() => setShowDropInCall(false)}
-              className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs flex items-center gap-2 transition-all cursor-pointer shadow-lg shadow-red-600/30"
-            >
-              <PhoneOff className="w-4 h-4" />
-              <span>End Drop-In</span>
-            </button>
-          </div>
-        </div>
+        <DropInVideoCall
+          onEndCall={() => setShowDropInCall(false)}
+          patientName={vitals.name}
+          caregiverName="Sarah Vance (Daughter)"
+        />
       )}
     </div>
   );
