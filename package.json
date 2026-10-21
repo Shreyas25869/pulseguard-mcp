@@ -1,0 +1,49 @@
+{
+  "name": "pulseguard-mcp",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "PulseGuard MCP: Ambient Proactive Healthcare & Emergency Copilot for Alexa+ via Model Context Protocol",
+  "main": "server/index.ts",
+  "scripts": {
+    "dev": "concurrently -k -p \"[{name}]\" -n \"SERVER,CLIENT\" -c \"cyan.bold,magenta.bold\" \"npm run server:dev\" \"npm run client:dev\"",
+    "server:dev": "tsx watch server/index.ts",
+    "client:dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [
+    "alexa-plus",
+    "mcp",
+    "model-context-protocol",
+    "amazon-bedrock",
+    "healthcare",
+    "ring-doorbell",
+    "hackathon",
+    "aws"
+  ],
+  "author": "PulseGuard Team",
+  "license": "MIT",
+  "dependencies": {
+    "@aws-sdk/client-bedrock-runtime": "^3.1154.0",
+    "@modelcontextprotocol/sdk": "^1.32.1",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "autoprefixer": "^10.6.1",
+    "concurrently": "^10.0.6",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.8",
+    "express": "^5.3.0",
+    "lucide-react": "^1.61.0",
+    "postcss": "^8.5.31",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "tailwindcss": "^4.3.3",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.5"
+  }
+}
