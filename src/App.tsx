@@ -1,13 +1,17 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Header } from './components/Header.tsx';
+import { Header, ViewMode } from './components/Header.tsx';
+import { DemoToolbar } from './components/DemoToolbar.tsx';
 import { EchoShowDisplay } from './components/EchoShowDisplay.tsx';
 import { AgentInspector } from './components/AgentInspector.tsx';
-import { ScenarioController } from './components/ScenarioController.tsx';
 import { CareLedger } from './components/CareLedger.tsx';
 import { McpSchemaViewer } from './components/McpSchemaViewer.tsx';
+import { CaregiverPortal } from './components/CaregiverPortal.tsx';
+import { DeveloperHub } from './components/DeveloperHub.tsx';
+import { playAlexaChime } from './utils/audio.ts';
 import { PatientVitals, MedicationItem, RingSecurityState, CareAuditEntry, AgentExecutionResult } from './types.ts';
 
 export default function App() {
+  const [viewMode, setViewMode] = useState<ViewMode>('split');
   const [vitals, setVitals] = useState<PatientVitals>({
     patientId: 'PT-8821',
     name: 'Eleanor Vance',
@@ -39,14 +43,14 @@ export default function App() {
   const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [activeScenario, setActiveScenario] = useState<string>('reset_normal');
 
-  // Speech synthesis for Alexa's voice
+  // Synthesized Alexa voice
   const speakAlexaVoice = useCallback((text: string) => {
     if (!voiceEnabled || !('speechSynthesis' in window)) return;
     try {
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.rate = 1.02;
-      utterance.pitch = 1.05; // slightly melodic/calm tone
+      utterance.pitch = 1.05;
 
       const voices = window.speechSynthesis.getVoices();
       const preferred = voices.find(v => 
@@ -64,7 +68,7 @@ export default function App() {
     }
   }, [voiceEnabled]);
 
-  // Fetch initial state
+  // Initial fetch
   const fetchState = async () => {
     try {
       const res = await fetch('/api/state');
@@ -76,7 +80,7 @@ export default function App() {
         setAuditLogs(data.auditLogs);
       }
     } catch (err) {
-      console.warn('Backend connection pending...');
+      console.warn('Backend connecting...');
     }
   };
 
@@ -84,10 +88,17 @@ export default function App() {
     fetchState();
   }, []);
 
-  // Trigger Scenario handler
+  // Trigger Scenario
   const handleTriggerScenario = async (scenarioId: 'fall_emergency' | 'missed_meds' | 'first_responder_arrival' | 'reset_normal') => {
     setIsProcessing(true);
     setActiveScenario(scenarioId);
+
+    // Audio chime feedback
+    if (scenarioId === 'fall_emergency') {
+      playAlexaChime('alert');
+    } else {
+      playAlexaChime('wake');
+    }
 
     try {
       const res = await fetch('/api/trigger-scenario', {
@@ -111,13 +122,13 @@ export default function App() {
         }
       }
     } catch (err) {
-      console.error('Failed to trigger scenario:', err);
+      console.error('Scenario trigger error:', err);
     } finally {
       setIsProcessing(false);
     }
   };
 
-  // Custom User / Voice Prompt handler
+  // Custom User Prompt
   const handleCustomPrompt = async (prompt: string) => {
     setIsProcessing(true);
 
@@ -143,15 +154,31 @@ export default function App() {
         }
       }
     } catch (err) {
-      console.error('Failed to process custom prompt:', err);
+      console.error('Prompt processing error:', err);
     } finally {
       setIsProcessing(false);
     }
   };
 
+  // Remote Ring deadbolt toggle
+  const handleToggleLock = async () => {
+    try {
+      const res = await fetch('/api/ring/toggle-lock', { method: 'POST' });
+      if (res.ok) {
+        const updated = await res.json();
+        setRing(updated);
+      }
+    } catch (err) {
+      console.error('Lock toggle error:', err);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-['Plus_Jakarta_Sans',sans-serif]">
+      {/* Top Navigation Bar with View Switcher */}
       <Header
+        viewMode={viewMode}
+        setViewMode={setViewMode}
         voiceEnabled={voiceEnabled}
         setVoiceEnabled={setVoiceEnabled}
         onSendCustomPrompt={handleCustomPrompt}
@@ -160,10 +187,50 @@ export default function App() {
         status={lastExecution?.status || 'monitoring'}
       />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-6">
-        {/* TOP ROW: Echo Show Display (Left) + Agent Reasoning & MCP Inspector (Right) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          <div className="lg:col-span-7">
+      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-5">
+        {/* Scenario Control Toolbar - Always Visible & One-Click Accessible */}
+        <DemoToolbar
+          onTrigger={handleTriggerScenario}
+          isProcessing={isProcessing}
+          activeScenario={activeScenario}
+        />
+
+        {/* VIEW 1: SPLIT EXECUTIVE VIEW (Recommended for Demo Video & Judges) */}
+        {viewMode === 'split' && (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+              {/* Echo Show 15 Display (7 cols) */}
+              <div className="lg:col-span-7">
+                <EchoShowDisplay
+                  vitals={vitals}
+                  medications={medications}
+                  ring={ring}
+                  lastExecution={lastExecution}
+                  isProcessing={isProcessing}
+                  onQuickAction={handleCustomPrompt}
+                />
+              </div>
+
+              {/* Agent Reasoning & MCP Tool Inspector (5 cols) */}
+              <div className="lg:col-span-5">
+                <AgentInspector
+                  execution={lastExecution}
+                  isProcessing={isProcessing}
+                />
+              </div>
+            </div>
+
+            {/* Bottom Row: Care Ledger + MCP Tool Schemas */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <CareLedger logs={auditLogs} />
+              <McpSchemaViewer />
+            </div>
+          </div>
+        )}
+
+        {/* VIEW 2: ECHO SHOW 15 ONLY (Patient Ambient View) */}
+        {viewMode === 'echoshow' && (
+          <div className="max-w-4xl mx-auto py-2">
             <EchoShowDisplay
               vitals={vitals}
               medications={medications}
@@ -173,32 +240,42 @@ export default function App() {
               onQuickAction={handleCustomPrompt}
             />
           </div>
+        )}
 
-          <div className="lg:col-span-5">
-            <AgentInspector
-              execution={lastExecution}
-              isProcessing={isProcessing}
-            />
-          </div>
-        </div>
-
-        {/* BOTTOM ROW: Scenario Controller + Care Ledger + MCP Tools */}
-        <div className="space-y-6">
-          <ScenarioController
-            onTrigger={handleTriggerScenario}
-            isProcessing={isProcessing}
-            activeScenario={activeScenario}
+        {/* VIEW 3: CAREGIVER MOBILE PORTAL (Daughter Sarah Vance's View) */}
+        {viewMode === 'caregiver' && (
+          <CaregiverPortal
+            vitals={vitals}
+            medications={medications}
+            ring={ring}
+            auditLogs={auditLogs}
+            onToggleLock={handleToggleLock}
+            onCallHelp={() => handleCustomPrompt("Daughter Sarah Vance calling Echo Show in living room")}
           />
+        )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <CareLedger logs={auditLogs} />
-            <McpSchemaViewer />
-          </div>
-        </div>
+        {/* VIEW 4: DEVELOPER & MCP ARCHITECTURE HUB */}
+        {viewMode === 'developer' && (
+          <DeveloperHub
+            auditLogs={auditLogs}
+            lastExecution={lastExecution}
+            isProcessing={isProcessing}
+          />
+        )}
       </main>
 
-      <footer className="border-t border-slate-900 bg-slate-950/90 py-4 px-6 text-center text-xs text-slate-500 font-mono">
-        PulseGuard MCP · Built for Amazon Developer Hackathon 2026: Build, Ship, Shape · Licensed under MIT
+      {/* Professional Footer */}
+      <footer className="border-t border-slate-900 bg-slate-950/90 py-4 px-6 text-center text-xs text-slate-500 font-mono flex flex-col sm:flex-row items-center justify-between gap-2 max-w-7xl mx-auto w-full">
+        <div>
+          <span className="text-slate-400 font-semibold">PulseGuard MCP</span> · Amazon Developer Hackathon 2026: Build, Ship, Shape
+        </div>
+        <div className="flex items-center gap-4 text-[11px] text-slate-400">
+          <span>Model Context Protocol v1.0</span>
+          <span>•</span>
+          <span>Amazon Bedrock Nova</span>
+          <span>•</span>
+          <span>MIT License</span>
+        </div>
       </footer>
     </div>
   );
