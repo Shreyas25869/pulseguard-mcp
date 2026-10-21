@@ -203,34 +203,34 @@ export const DropInVideoCall: React.FC<DropInVideoCallProps> = ({
   };
 
   return (
-    <div className="absolute inset-0 z-50 bg-slate-950/95 backdrop-blur-md rounded-[2.2rem] p-5 flex flex-col justify-between border-2 border-indigo-500/80 shadow-2xl animate-in fade-in zoom-in-95 overflow-hidden">
+    <div className="absolute inset-0 z-50 bg-white/95 backdrop-blur-md rounded-[2.2rem] p-5 flex flex-col justify-between border-2 border-indigo-400 shadow-2xl animate-in fade-in zoom-in-95 overflow-hidden">
       
       {/* Top Header Row */}
-      <div className="flex items-center justify-between border-b border-slate-800/80 pb-3">
+      <div className="flex items-center justify-between border-b border-slate-200 pb-3">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-indigo-600/30 border border-indigo-500 flex items-center justify-center shadow-lg">
-            <Video className="w-5 h-5 text-indigo-400" />
+          <div className="w-10 h-10 rounded-2xl bg-indigo-50 border border-indigo-200 flex items-center justify-center shadow-xs">
+            <Video className="w-5 h-5 text-indigo-600" />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-white flex items-center gap-2">
-              Alexa Drop-In <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-950 border border-emerald-700 text-emerald-400 font-mono animate-pulse">LIVE TWO-WAY WEBRTC</span>
+            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+              Alexa Drop-In <span className="text-[10px] px-2 py-0.5 rounded-full bg-teal-50 border border-teal-200 text-teal-700 font-mono font-semibold animate-pulse">LIVE TWO-WAY WEBRTC</span>
             </h3>
-            <p className="text-[11px] text-slate-400 font-mono">
+            <p className="text-[11px] text-slate-500 font-mono">
               Connected: {caregiverName} ↔ Living Room Echo Show 15
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-2 text-xs font-mono">
-          <span className="text-emerald-400 bg-slate-900 border border-slate-800 px-2.5 py-1 rounded-xl font-bold flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+          <span className="text-teal-700 bg-teal-50 border border-teal-200 px-2.5 py-1 rounded-xl font-bold flex items-center gap-1.5 shadow-xs">
+            <span className="w-2 h-2 rounded-full bg-teal-500 animate-ping"></span>
             {formatTime(callDuration)}
           </span>
         </div>
       </div>
 
       {/* Main Video Arena: Remote Sarah Feed + Live Webcam PiP */}
-      <div className="relative flex-1 rounded-2xl overflow-hidden border border-slate-800 bg-slate-900 my-3 flex items-center justify-center">
+      <div className="relative flex-1 rounded-2xl overflow-hidden border border-slate-200 bg-slate-900 my-3 flex items-center justify-center shadow-xs">
         
         {/* Remote Feed: Sarah Vance (Daughter) */}
         <div className="relative w-full h-full flex items-center justify-center bg-slate-950">
@@ -254,7 +254,7 @@ export const DropInVideoCall: React.FC<DropInVideoCallProps> = ({
         </div>
 
         {/* PIP: Eleanor's Live Echo Show Webcam (Always mounted in DOM for zero-latency video rendering) */}
-        <div className="absolute top-3 right-3 w-48 sm:w-56 aspect-video rounded-xl overflow-hidden border-2 border-indigo-400/80 bg-slate-950 shadow-2xl transition-all">
+        <div className="absolute top-3 right-3 w-48 sm:w-56 aspect-video rounded-xl overflow-hidden border-2 border-indigo-400 bg-slate-950 shadow-2xl transition-all">
           {/* Real Live Hardware Video Element */}
           <video
             ref={(el) => {
@@ -301,7 +301,7 @@ export const DropInVideoCall: React.FC<DropInVideoCallProps> = ({
           {/* PiP Badge */}
           <div className="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded bg-black/75 backdrop-blur-sm text-[9px] text-slate-200 font-mono flex items-center gap-1 z-10">
             <span className={`w-1.5 h-1.5 rounded-full ${
-              hasWebcamAccess && isVideoEnabled ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'
+              hasWebcamAccess && isVideoEnabled ? 'bg-teal-400 animate-pulse' : 'bg-amber-400'
             }`}></span>
             <span>{hasWebcamAccess && isVideoEnabled ? 'Your Live Cam' : 'Living Room Cam'}</span>
           </div>
@@ -314,7 +314,7 @@ export const DropInVideoCall: React.FC<DropInVideoCallProps> = ({
             {audioLevel.map((lvl, idx) => (
               <span
                 key={idx}
-                className="w-1 rounded-full bg-gradient-to-t from-sky-500 to-indigo-400 transition-all duration-75"
+                className="w-1 rounded-full bg-gradient-to-t from-sky-400 to-indigo-400 transition-all duration-75"
                 style={{ height: `${isMuted ? 10 : lvl}%` }}
               ></span>
             ))}
@@ -323,19 +323,19 @@ export const DropInVideoCall: React.FC<DropInVideoCallProps> = ({
       </div>
 
       {/* Call Controls Bar */}
-      <div className="border-t border-slate-800/80 pt-3 flex items-center justify-between">
+      <div className="border-t border-slate-200 pt-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           {/* Mute Button */}
           <button
             onClick={handleToggleMute}
             className={`p-2.5 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
               isMuted
-                ? 'bg-amber-950 border-amber-700 text-amber-300'
-                : 'bg-slate-900 border-slate-800 text-slate-300 hover:bg-slate-800'
+                ? 'bg-amber-50 border-amber-300 text-amber-800'
+                : 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200'
             }`}
             title={isMuted ? 'Unmute Microphone' : 'Mute Microphone'}
           >
-            {isMuted ? <MicOff className="w-4 h-4 text-amber-400" /> : <Mic className="w-4 h-4 text-emerald-400" />}
+            {isMuted ? <MicOff className="w-4 h-4 text-amber-600" /> : <Mic className="w-4 h-4 text-teal-600" />}
             <span className="hidden sm:inline">{isMuted ? 'Muted' : 'Mute'}</span>
           </button>
 
@@ -344,24 +344,24 @@ export const DropInVideoCall: React.FC<DropInVideoCallProps> = ({
             onClick={handleToggleVideo}
             className={`p-2.5 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
               !isVideoEnabled
-                ? 'bg-amber-950 border-amber-700 text-amber-300'
-                : 'bg-slate-900 border-slate-800 text-slate-300 hover:bg-slate-800'
+                ? 'bg-amber-50 border-amber-300 text-amber-800'
+                : 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200'
             }`}
             title={isVideoEnabled ? 'Turn Off Camera' : 'Turn On Camera'}
           >
-            {!isVideoEnabled ? <VideoOff className="w-4 h-4 text-amber-400" /> : <Video className="w-4 h-4 text-indigo-400" />}
+            {!isVideoEnabled ? <VideoOff className="w-4 h-4 text-amber-600" /> : <Video className="w-4 h-4 text-indigo-600" />}
             <span className="hidden sm:inline">{!isVideoEnabled ? 'Camera Off' : 'Camera On'}</span>
           </button>
 
-          <span className="text-[11px] font-mono text-slate-400 hidden md:inline ml-2">
-            Protocol: <span className="text-sky-400">WebRTC Encrypted P2P</span>
+          <span className="text-[11px] font-mono text-slate-500 hidden md:inline ml-2">
+            Protocol: <span className="text-sky-600 font-semibold">WebRTC Encrypted P2P</span>
           </span>
         </div>
 
         {/* End Call Button */}
         <button
           onClick={onEndCall}
-          className="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs flex items-center gap-2 transition-all cursor-pointer shadow-lg shadow-red-600/30"
+          className="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs flex items-center gap-2 transition-all cursor-pointer shadow-md shadow-red-600/20"
         >
           <PhoneOff className="w-4 h-4" />
           <span>End Drop-In Call</span>

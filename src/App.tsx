@@ -390,7 +390,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-['Plus_Jakarta_Sans',sans-serif]">
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-['Plus_Jakarta_Sans',sans-serif]">
       {/* Top Navigation Bar with View Switcher */}
       <Header
         viewMode={viewMode}
@@ -495,11 +495,11 @@ export default function App() {
       </main>
 
       {/* Professional Footer */}
-      <footer className="border-t border-slate-900 bg-slate-950/90 py-4 px-6 text-center text-xs text-slate-500 font-mono flex flex-col sm:flex-row items-center justify-between gap-2 max-w-7xl mx-auto w-full">
+      <footer className="border-t border-slate-200 bg-white/80 py-4 px-6 text-center text-xs text-slate-500 font-mono flex flex-col sm:flex-row items-center justify-between gap-2 max-w-7xl mx-auto w-full">
         <div>
-          <span className="text-slate-400 font-semibold">PulseGuard MCP</span> · Amazon Developer Hackathon 2026: Build, Ship, Shape
+          <span className="text-slate-800 font-semibold">PulseGuard MCP</span> · Amazon Developer Hackathon 2026: Build, Ship, Shape
         </div>
-        <div className="flex items-center gap-4 text-[11px] text-slate-400">
+        <div className="flex items-center gap-4 text-[11px] text-slate-600">
           <span>Model Context Protocol v1.0</span>
           <span>•</span>
           <span>Amazon Bedrock Nova</span>
