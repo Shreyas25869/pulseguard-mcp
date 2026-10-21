@@ -23,38 +23,62 @@ Powered by **Amazon Bedrock (Nova Pro / Claude)** and implementing the open **Mo
 
 ## 🏗️ Architecture
 
+![PulseGuard MCP Architecture](docs/architecture.svg)
+
+<details>
+<summary><b>📊 Click to expand Mermaid Flowchart Code</b></summary>
+
 ```mermaid
-flowchart TD
-    subgraph Wearable_And_Perimeter["Ambient Sensors & Smart Home"]
-        V["Wearable Telemetry<br/>(Heart Rate, Fall G-Force, Posture)"]
-        P["Smart Pill Dispenser<br/>(Adherence Sensors)"]
-        R["Ring Video Doorbell & Smart Deadbolt<br/>(Perimeter Access)"]
+flowchart LR
+    subgraph S1["1. Ambient Sensors"]
+        direction TB
+        V["Wearable Telemetry<br/>(3.85G Fall, 142 BPM, Tilt)"]
+        P["Smart Pill Dispenser<br/>(Slot 3 Overdue Sensor)"]
+        R["Ring Doorbell &amp; Deadbolt<br/>(Perimeter Access)"]
     end
 
-    subgraph MCP_Layer["Model Context Protocol (MCP) Server"]
-        MCP["PulseGuard MCP Server<br/>(SSE: /mcp/sse)"]
+    subgraph S2["2. PulseGuard MCP Server"]
+        direction TB
+        MCP["MCP Server Core<br/>(/mcp/sse JSON-RPC)"]
         T1["get_patient_vitals_telemetry"]
         T2["check_medication_adherence"]
         T3["control_ring_security"]
         T4["dispatch_emergency_escalation"]
         T5["record_care_event_log"]
-        MCP --> T1 & T2 & T3 & T4 & T5
+        MCP --> T1
+        MCP --> T2
+        MCP --> T3
+        MCP --> T4
+        MCP --> T5
     end
 
-    subgraph Agent_Core["Alexa+ Intelligence Layer"]
-        Bedrock["Amazon Bedrock (Nova Pro / Claude 3.5)<br/>Autonomous Reasoning Loop"]
+    subgraph S3["3. Alexa+ Intelligence"]
+        direction TB
+        Bedrock["Amazon Bedrock Nova Pro<br/>Autonomous Cognitive Loop"]
+        Guard["Clinical Guardrails<br/>&amp; Bedside Triage Engine"]
+        Bedrock --> Guard
     end
 
-    subgraph User_Interface["Echo Show 15 & Caregiver Command Center"]
-        Echo["Echo Show 15 Smart Display<br/>(Web Speech Voice & Triage Cards)"]
-        Console["Developer MCP Reasoning Inspector<br/>(Live Thought Tree & Tool Traces)"]
-        Ledger["Amazon DynamoDB Care Ledger<br/>(SBAR Clinical Audit Handoff)"]
+    subgraph S4["4. Devices &amp; Cloud Ledger"]
+        direction TB
+        Echo["Echo Show 15 Display<br/>(Cyan LED &amp; Triage HUD)"]
+        Portal["Caregiver Mobile App<br/>(Sarah Vance SMS/WebRTC)"]
+        Ledger["Amazon DynamoDB<br/>(Immutable Care Ledger)"]
     end
 
-    V & P & R <--> MCP
-    MCP <--> Bedrock
-    Bedrock <--> Echo & Console & Ledger
+    V --> MCP
+    P --> MCP
+    R --> MCP
+
+    MCP --> Bedrock
+    Bedrock --> MCP
+
+    Bedrock --> Echo
+    Bedrock --> Portal
+    Bedrock --> Ledger
 ```
+
+</details>
 
 ---
 
@@ -81,7 +105,7 @@ PulseGuard exposes 5 standardized MCP tools available over Server-Sent Events (`
 ### Installation & Launch
 ```bash
 # 1. Clone repository
-git clone https://github.com/your-username/pulseguard-mcp.git
+git clone https://github.com/Shreyas25869/pulseguard-mcp.git
 cd pulseguard-mcp
 
 # 2. Install dependencies
