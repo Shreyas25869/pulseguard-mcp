@@ -46,7 +46,7 @@ export const Header: React.FC<HeaderProps> = ({
   ];
 
   return (
-    <header className="border-b border-white/80 bg-white/70 backdrop-blur-xl sticky top-0 z-50 shadow-[0_4px_20px_-4px_rgba(15,23,42,0.03)]">
+    <header className="border-b border-slate-800/80 bg-[#0c121e]/95 backdrop-blur-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2.5 flex items-center justify-between gap-4">
         
         {/* Brand: Clean Icon + Logo + MCP Badge */}
@@ -55,7 +55,7 @@ export const Header: React.FC<HeaderProps> = ({
             <div className={`w-8 h-8 rounded-xl flex items-center justify-center font-bold text-white shadow-sm transition-all ${
               status === 'escalated' 
                 ? 'bg-red-600 shadow-red-500/30 animate-pulse' 
-                : 'bg-gradient-to-tr from-sky-500 to-cyan-500 shadow-sky-500/25'
+                : 'bg-gradient-to-tr from-sky-500 to-cyan-400 shadow-sky-500/20'
             }`}>
               <Shield className="w-4 h-4 text-white" />
             </div>
@@ -68,15 +68,15 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           <div className="flex items-center gap-1.5">
-            <span className="text-sm font-bold tracking-tight text-slate-900">PulseGuard</span>
-            <span className="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-sky-500/10 text-sky-700 border border-sky-400/20 backdrop-blur-xs">
+            <span className="text-sm font-bold tracking-tight text-white">PulseGuard</span>
+            <span className="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-sky-950/90 text-sky-400 border border-sky-800/80">
               MCP
             </span>
           </div>
         </div>
 
         {/* View Switcher: Minimal, Modern Segmented Pill */}
-        <nav className="flex items-center bg-slate-200/50 backdrop-blur-md border border-white/80 rounded-xl p-1 gap-1 shadow-inner">
+        <nav className="flex items-center bg-slate-900/90 border border-slate-800 rounded-xl p-1 gap-1 shadow-inner">
           {navTabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = viewMode === tab.id;
@@ -86,8 +86,8 @@ export const Header: React.FC<HeaderProps> = ({
                 onClick={() => setViewMode(tab.id)}
                 className={`px-3 py-1 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 cursor-pointer ${
                   isActive
-                    ? 'bg-white text-sky-700 font-semibold shadow-sm border border-white/90'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
+                    ? 'bg-sky-500 text-slate-950 font-bold shadow-sm'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
                 }`}
               >
                 <Icon className="w-3.5 h-3.5" />
@@ -107,15 +107,15 @@ export const Header: React.FC<HeaderProps> = ({
               onChange={(e) => setPromptText(e.target.value)}
               placeholder="Ask Alexa+..."
               disabled={isProcessing}
-              className="w-full bg-white/60 backdrop-blur-md border border-slate-200/80 rounded-xl pl-3 pr-8 py-1.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-sky-400 focus:bg-white/90 focus:ring-2 focus:ring-sky-400/15 transition-all disabled:opacity-50 shadow-xs"
+              className="w-full bg-slate-900/90 border border-slate-800 rounded-xl pl-3 pr-8 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-sky-500 focus:bg-slate-900 transition-colors disabled:opacity-50"
             />
             <button
               type="submit"
               disabled={!promptText.trim() || isProcessing}
-              className="absolute right-1 top-1 p-1 rounded-lg text-slate-400 hover:text-sky-600 disabled:opacity-30 cursor-pointer transition-colors"
+              className="absolute right-1 top-1 p-1 rounded-lg text-slate-400 hover:text-sky-400 disabled:opacity-30 cursor-pointer transition-colors"
               title="Submit prompt to Alexa+"
             >
-              {isProcessing ? <RefreshCw className="w-3 h-3 animate-spin text-sky-500" /> : <Send className="w-3 h-3" />}
+              {isProcessing ? <RefreshCw className="w-3 h-3 animate-spin text-sky-400" /> : <Send className="w-3 h-3" />}
             </button>
           </form>
 
@@ -125,14 +125,14 @@ export const Header: React.FC<HeaderProps> = ({
               setVoiceEnabled(!voiceEnabled);
               if (!voiceEnabled) playAlexaChime('success');
             }}
-            className={`px-2.5 py-1.5 rounded-xl text-xs font-medium border flex items-center gap-1.5 transition-all cursor-pointer shadow-xs ${
+            className={`px-2.5 py-1.5 rounded-xl text-xs font-medium border flex items-center gap-1.5 transition-colors cursor-pointer ${
               voiceEnabled
-                ? 'bg-sky-500/10 border-sky-400/30 text-sky-700 backdrop-blur-md'
-                : 'bg-white/60 border-slate-200/80 text-slate-600 hover:text-slate-900 backdrop-blur-md'
+                ? 'bg-sky-950/80 border-sky-800 text-sky-300'
+                : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200'
             }`}
             title={voiceEnabled ? 'Mute synthesized Alexa voice' : 'Enable synthesized Alexa voice'}
           >
-            {voiceEnabled ? <Volume2 className="w-3.5 h-3.5 text-sky-600" /> : <VolumeX className="w-3.5 h-3.5" />}
+            {voiceEnabled ? <Volume2 className="w-3.5 h-3.5 text-sky-400" /> : <VolumeX className="w-3.5 h-3.5" />}
             <span className="hidden md:inline">{voiceEnabled ? 'Voice' : 'Muted'}</span>
           </button>
 
@@ -140,7 +140,7 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={onReset}
             disabled={isProcessing}
-            className="p-2 rounded-xl border border-slate-200/80 bg-white/60 hover:bg-white/90 text-slate-600 hover:text-slate-900 backdrop-blur-md transition-all cursor-pointer disabled:opacity-40 shadow-xs"
+            className="p-2 rounded-xl border border-slate-800 bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-slate-200 transition-colors cursor-pointer disabled:opacity-40"
             title="Reset telemetry & perimeter to baseline"
           >
             <RefreshCw className="w-3.5 h-3.5" />

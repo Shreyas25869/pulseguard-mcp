@@ -8,17 +8,17 @@ interface CareLedgerProps {
 
 export const CareLedger: React.FC<CareLedgerProps> = ({ logs }) => {
   return (
-    <div className="glass-panel rounded-3xl p-5 shadow-sm">
+    <div className="rounded-3xl border border-slate-800 bg-[#0f172a]/90 shadow-xl p-5">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
-            <Database className="w-4 h-4 text-sky-600" /> Cloud Care Ledger (Amazon DynamoDB)
+          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+            <Database className="w-4 h-4 text-sky-400" /> Cloud Care Ledger (Amazon DynamoDB)
           </h3>
-          <p className="text-[11px] text-slate-500 mt-0.5">
+          <p className="text-[11px] text-slate-400 mt-0.5">
             Immutable incident audits & caregiver handoff logs
           </p>
         </div>
-        <span className="glass-pill text-[10px] px-2.5 py-0.5 rounded-full text-slate-700 font-mono shadow-2xs">
+        <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-slate-900 border border-slate-800 text-slate-400 font-mono">
           Table: pulseguard_care_events
         </span>
       </div>
@@ -31,39 +31,39 @@ export const CareLedger: React.FC<CareLedgerProps> = ({ logs }) => {
           return (
             <div
               key={entry.id}
-              className={`p-3 rounded-2xl border text-xs transition-all shadow-xs ${
+              className={`p-3 rounded-2xl border text-xs transition-all ${
                 isCritical
-                  ? 'bg-gradient-to-r from-red-500/15 via-rose-500/10 to-white/80 backdrop-blur-md border-red-300 text-red-950'
+                  ? 'bg-red-950/30 border-red-800/60 text-red-200'
                   : isWarning
-                  ? 'bg-gradient-to-r from-amber-500/15 via-orange-500/10 to-white/80 backdrop-blur-md border-amber-300 text-amber-950'
-                  : 'glass-card border-slate-200/80 text-slate-800 hover:border-sky-300'
+                  ? 'bg-amber-950/30 border-amber-800/60 text-amber-200'
+                  : 'bg-slate-950/70 border-slate-800 text-slate-300'
               }`}
             >
               <div className="flex items-center justify-between mb-1.5">
                 <div className="flex items-center gap-2">
-                  <span className="font-mono text-[10px] font-bold text-sky-700">
+                  <span className="font-mono text-[10px] font-bold text-sky-400">
                     {entry.id}
                   </span>
-                  <span className="glass-pill text-[10px] px-2 py-0.5 rounded text-slate-700 font-mono uppercase font-semibold shadow-2xs">
+                  <span className="text-[10px] px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-slate-300 font-mono uppercase font-semibold">
                     {entry.eventType.replace('_', ' ')}
                   </span>
                 </div>
-                <div className="flex items-center gap-1 text-[10px] text-slate-400 font-mono">
+                <div className="flex items-center gap-1 text-[10px] text-slate-500 font-mono">
                   <Clock className="w-3 h-3" />
                   {new Date(entry.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
                 </div>
               </div>
 
-              <p className="font-medium text-slate-900 mb-1">{entry.summary}</p>
-              <p className="text-[11px] text-slate-600 italic mb-1.5 leading-relaxed">
+              <p className="font-medium text-slate-200 mb-1">{entry.summary}</p>
+              <p className="text-[11px] text-slate-400 italic mb-1.5 leading-relaxed">
                 "{entry.agentReasoning}"
               </p>
 
-              <div className="flex items-center justify-between pt-1.5 border-t border-slate-200/60 text-[10px]">
-                <span className="text-teal-700 font-semibold flex items-center gap-1 font-mono">
+              <div className="flex items-center justify-between pt-1.5 border-t border-slate-800/80 text-[10px]">
+                <span className="text-emerald-400 font-semibold flex items-center gap-1 font-mono">
                   <ShieldCheck className="w-3 h-3" /> {entry.outcome}
                 </span>
-                <span className="text-slate-400 font-mono">
+                <span className="text-slate-500 font-mono">
                   Tools: {entry.toolsInvoked.join(', ')}
                 </span>
               </div>

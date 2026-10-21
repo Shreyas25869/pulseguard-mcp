@@ -19,8 +19,8 @@ export const DemoToolbar: React.FC<DemoToolbarProps> = ({
       badge: 'Scenario 1',
       shortDesc: '3.85G Fall · 142 BPM · Deadbolt Auto-Unlock',
       icon: AlertTriangle,
-      color: 'from-red-500/10 via-rose-500/5 to-white/70 border-red-200/80 text-red-800 hover:border-red-400 hover:shadow-md hover:shadow-red-500/10',
-      activeRing: 'ring-2 ring-red-500 shadow-md shadow-red-500/20 bg-gradient-to-r from-red-500/15 via-rose-500/10 to-white/90 border-red-500 text-red-950'
+      color: 'from-red-950/30 via-red-900/10 to-transparent border-red-900/50 text-red-200 hover:border-red-500/70',
+      activeRing: 'ring-2 ring-red-500 shadow-lg shadow-red-500/20 bg-red-950/50 border-red-500 text-red-100'
     },
     {
       id: 'missed_meds' as const,
@@ -28,8 +28,8 @@ export const DemoToolbar: React.FC<DemoToolbarProps> = ({
       badge: 'Scenario 2',
       shortDesc: 'Slot 3 Eliquis · BP 148/94 · Voice Prompt',
       icon: Pill,
-      color: 'from-amber-500/10 via-orange-500/5 to-white/70 border-amber-200/80 text-amber-800 hover:border-amber-400 hover:shadow-md hover:shadow-amber-500/10',
-      activeRing: 'ring-2 ring-amber-500 shadow-md shadow-amber-500/20 bg-gradient-to-r from-amber-500/15 via-orange-500/10 to-white/90 border-amber-500 text-amber-950'
+      color: 'from-amber-950/30 via-amber-900/10 to-transparent border-amber-900/50 text-amber-200 hover:border-amber-500/70',
+      activeRing: 'ring-2 ring-amber-500 shadow-lg shadow-amber-500/20 bg-amber-950/50 border-amber-500 text-amber-100'
     },
     {
       id: 'first_responder_arrival' as const,
@@ -37,8 +37,8 @@ export const DemoToolbar: React.FC<DemoToolbarProps> = ({
       badge: 'Scenario 3',
       shortDesc: 'Ring Pro Feed · Intercom · Code Staging',
       icon: Shield,
-      color: 'from-sky-500/10 via-cyan-500/5 to-white/70 border-sky-200/80 text-sky-800 hover:border-sky-400 hover:shadow-md hover:shadow-sky-500/10',
-      activeRing: 'ring-2 ring-sky-500 shadow-md shadow-sky-500/20 bg-gradient-to-r from-sky-500/15 via-cyan-500/10 to-white/90 border-sky-500 text-sky-950'
+      color: 'from-sky-950/30 via-sky-900/10 to-transparent border-sky-900/50 text-sky-200 hover:border-sky-500/70',
+      activeRing: 'ring-2 ring-sky-500 shadow-lg shadow-sky-500/20 bg-sky-950/50 border-sky-500 text-sky-100'
     },
     {
       id: 'reset_normal' as const,
@@ -46,32 +46,32 @@ export const DemoToolbar: React.FC<DemoToolbarProps> = ({
       badge: 'Reset',
       shortDesc: '72 BPM · Vitals Stable · Perimeter Secured',
       icon: CheckCircle2,
-      color: 'from-teal-500/10 via-emerald-500/5 to-white/70 border-teal-200/80 text-teal-800 hover:border-teal-400 hover:shadow-md hover:shadow-teal-500/10',
-      activeRing: 'ring-2 ring-teal-500 shadow-md shadow-teal-500/20 bg-gradient-to-r from-teal-500/15 via-emerald-500/10 to-white/90 border-teal-500 text-teal-950'
+      color: 'from-teal-950/30 via-teal-900/10 to-transparent border-teal-900/50 text-teal-200 hover:border-teal-500/70',
+      activeRing: 'ring-2 ring-teal-500 shadow-lg shadow-teal-500/20 bg-teal-950/50 border-teal-500 text-teal-100'
     }
   ];
 
   return (
-    <div className="glass-panel rounded-3xl p-4 shadow-sm space-y-3">
+    <div className="bg-[#0f172a]/90 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
       {/* Top Banner: Explanation Stepper */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 px-1 text-xs">
-        <div className="flex items-center gap-2 text-slate-800 font-semibold">
-          <Zap className="w-4 h-4 text-sky-600" />
+        <div className="flex items-center gap-2 text-slate-200 font-semibold">
+          <Zap className="w-4 h-4 text-sky-400" />
           <span>Interactive Demo Scenarios:</span>
-          <span className="text-slate-500 font-normal hidden sm:inline">
+          <span className="text-slate-400 font-normal hidden sm:inline">
             Click any button below to trigger the Alexa+ Agent & MCP tool loop
           </span>
         </div>
 
         {/* 4-Step Architecture Flow */}
-        <div className="flex items-center gap-1.5 text-[11px] font-mono text-slate-600 glass-pill px-3 py-1 rounded-xl shadow-2xs">
-          <span className="text-sky-600 font-semibold">1. Telemetry</span>
-          <ArrowRight className="w-3 h-3 text-slate-400" />
-          <span className="text-amber-600 font-semibold">2. Reasoning</span>
-          <ArrowRight className="w-3 h-3 text-slate-400" />
-          <span className="text-cyan-600 font-semibold">3. MCP Tools</span>
-          <ArrowRight className="w-3 h-3 text-slate-400" />
-          <span className="text-teal-600 font-semibold">4. Action / Unlock</span>
+        <div className="flex items-center gap-1.5 text-[11px] font-mono text-slate-300 bg-slate-950/80 px-3 py-1.5 rounded-xl border border-slate-800">
+          <span className="text-sky-400 font-medium">1. Telemetry</span>
+          <ArrowRight className="w-3 h-3 text-slate-500" />
+          <span className="text-amber-400 font-medium">2. Reasoning</span>
+          <ArrowRight className="w-3 h-3 text-slate-500" />
+          <span className="text-cyan-400 font-medium">3. MCP Tools</span>
+          <ArrowRight className="w-3 h-3 text-slate-500" />
+          <span className="text-emerald-400 font-medium">4. Action / Unlock</span>
         </div>
       </div>
 
@@ -86,23 +86,23 @@ export const DemoToolbar: React.FC<DemoToolbarProps> = ({
               key={s.id}
               onClick={() => onTrigger(s.id)}
               disabled={isProcessing}
-              className={`text-left p-3.5 rounded-2xl border transition-all relative overflow-hidden group flex flex-col justify-between backdrop-blur-md ${
-                isActive ? s.activeRing : `bg-gradient-to-r ${s.color}`
-              } disabled:opacity-50 disabled:cursor-not-allowed shadow-xs cursor-pointer`}
+              className={`text-left p-3.5 rounded-xl border transition-all relative overflow-hidden group flex flex-col justify-between ${
+                isActive ? s.activeRing : `bg-gradient-to-r ${s.color} bg-[#0b101c]/80`
+              } disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-sm`}
             >
               <div className="flex items-center justify-between w-full mb-1.5">
                 <div className="flex items-center gap-2">
                   <Icon className="w-4 h-4 flex-shrink-0" />
-                  <span className="text-xs font-bold truncate text-slate-900">{s.name}</span>
+                  <span className="text-xs font-bold truncate text-white">{s.name}</span>
                 </div>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-lg glass-pill text-slate-700 font-semibold shadow-2xs">
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-black/40 border border-slate-700/60 text-slate-300">
                   {s.badge}
                 </span>
               </div>
 
-              <div className="flex items-center justify-between mt-1 text-[11px] text-slate-500 font-medium">
+              <div className="flex items-center justify-between mt-1 text-[11px] text-slate-400">
                 <span className="truncate">{s.shortDesc}</span>
-                <Play className="w-3 h-3 text-sky-600 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all flex-shrink-0 ml-1" />
+                <Play className="w-3 h-3 text-sky-400 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all flex-shrink-0 ml-1" />
               </div>
             </button>
           );

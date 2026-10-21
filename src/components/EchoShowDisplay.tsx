@@ -71,30 +71,30 @@ export const EchoShowDisplay: React.FC<EchoShowDisplayProps> = ({
   }, [vitals.fallDetected]);
 
   return (
-    <div className="relative rounded-[2.6rem] p-3.5 bg-gradient-to-b from-slate-200 via-slate-100 to-slate-200 shadow-2xl border border-white/80 ring-1 ring-slate-300/70 shadow-slate-400/20 transition-all">
+    <div className="relative rounded-[2.2rem] p-3.5 bg-gradient-to-b from-slate-700 via-slate-800 to-slate-900 shadow-2xl border border-slate-700/80 transition-all">
       {/* Echo Show Bezel Frame */}
-      <div className="rounded-[2.1rem] bg-gradient-to-b from-white/95 via-sky-50/25 to-white/95 backdrop-blur-xl overflow-hidden border border-slate-200/90 shadow-inner flex flex-col min-h-[570px]">
+      <div className="rounded-[1.8rem] bg-slate-950 overflow-hidden border border-slate-900 shadow-inner flex flex-col min-h-[570px]">
         
         {/* Device Top Bar: Camera notch, Time, Status */}
-        <div className="bg-white/60 backdrop-blur-md px-6 py-2.5 border-b border-slate-200/70 flex items-center justify-between">
+        <div className="bg-slate-950 px-6 py-2.5 border-b border-slate-800/80 flex items-center justify-between">
           <div className="flex items-center gap-3">
             {/* Camera lens hole */}
-            <div className="w-3 h-3 rounded-full bg-slate-200 border border-slate-300/80 flex items-center justify-center shadow-inner">
-              <span className="w-1.5 h-1.5 rounded-full bg-sky-500 shadow-xs"></span>
+            <div className="w-2.5 h-2.5 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center">
+              <span className="w-1 h-1 rounded-full bg-sky-500/80"></span>
             </div>
-            <span className="text-[11px] font-semibold tracking-wider text-slate-600 uppercase font-mono">
+            <span className="text-[11px] font-semibold tracking-wider text-slate-400 uppercase font-mono">
               Echo Show 15 · Wall Display
             </span>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-3 text-xs text-slate-600 font-mono">
-            <span className="glass-pill px-2.5 py-0.5 rounded-lg flex items-center gap-1.5 text-slate-600 shadow-2xs">
-              <CloudSun className="w-3.5 h-3.5 text-amber-500" /> 71°F Seattle
+          <div className="flex items-center gap-4 text-xs text-slate-300 font-mono">
+            <span className="flex items-center gap-1.5 text-slate-400">
+              <CloudSun className="w-3.5 h-3.5 text-amber-400" /> 71°F Seattle
             </span>
-            <span className="glass-pill px-2.5 py-0.5 rounded-lg flex items-center gap-1 text-slate-600 shadow-2xs">
-              <MapPin className="w-3.5 h-3.5 text-sky-600" /> {vitals.currentRoom}
+            <span className="flex items-center gap-1 text-slate-400">
+              <MapPin className="w-3.5 h-3.5 text-sky-400" /> {vitals.currentRoom}
             </span>
-            <span className="glass-pill px-2.5 py-0.5 rounded-lg flex items-center gap-1 text-slate-800 font-bold shadow-2xs">
+            <span className="flex items-center gap-1 text-slate-200 font-bold">
               <Clock className="w-3.5 h-3.5 text-slate-400" /> 
               {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </span>
@@ -102,39 +102,39 @@ export const EchoShowDisplay: React.FC<EchoShowDisplayProps> = ({
         </div>
 
         {/* Display Canvas */}
-        <div className="p-5 flex-1 flex flex-col justify-between bg-gradient-to-b from-white/80 via-white/40 to-white/90 relative">
+        <div className="p-5 flex-1 flex flex-col justify-between bg-gradient-to-b from-slate-950 via-slate-900/90 to-slate-950 relative">
           
           {/* TOP SECTION: Patient Vitals & Live Cardiac Telemetry */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 mb-4">
             {/* Heart Rate + Live ECG */}
             <div className={`p-3 rounded-2xl border transition-all ${
               vitals.heartRate > 120 
-                ? 'bg-red-500/10 border-red-300 text-red-950 shadow-sm' 
-                : 'glass-card border-slate-200/70 text-slate-800 hover:border-sky-300 transition-all'
+                ? 'bg-red-950/50 border-red-700/80 text-red-200' 
+                : 'bg-slate-900/90 border-slate-800 text-slate-200'
             }`}>
-              <div className="flex items-center justify-between text-[11px] text-slate-500 mb-1">
+              <div className="flex items-center justify-between text-[11px] text-slate-400 mb-1">
                 <span className="font-medium">Heart Rate</span>
-                <Heart className={`w-3.5 h-3.5 ${vitals.heartRate > 120 ? 'text-red-500 animate-pulse' : 'text-rose-500'}`} />
+                <Heart className={`w-3.5 h-3.5 ${vitals.heartRate > 120 ? 'text-red-400 animate-pulse' : 'text-rose-400'}`} />
               </div>
               <div className="flex items-baseline gap-1.5">
-                <span className="text-2xl font-bold font-mono tracking-tight text-slate-900">{vitals.heartRate}</span>
-                <span className="text-[11px] text-slate-500">BPM</span>
+                <span className="text-2xl font-bold font-mono tracking-tight text-white">{vitals.heartRate}</span>
+                <span className="text-[11px] text-slate-400">BPM</span>
               </div>
               {/* Animated Live ECG Rhythm */}
               <ECGWaveform heartRate={vitals.heartRate} isEmergency={vitals.heartRate > 120} />
             </div>
 
             {/* Blood Oxygen SpO2 */}
-            <div className="p-3 rounded-2xl border glass-card border-slate-200/70 text-slate-800 hover:border-sky-300 transition-all">
-              <div className="flex items-center justify-between text-[11px] text-slate-500 mb-1">
+            <div className="p-3 rounded-2xl border bg-slate-900/90 border-slate-800 text-slate-200">
+              <div className="flex items-center justify-between text-[11px] text-slate-400 mb-1">
                 <span className="font-medium">Blood Oxygen</span>
-                <Activity className="w-3.5 h-3.5 text-sky-600" />
+                <Activity className="w-3.5 h-3.5 text-cyan-400" />
               </div>
               <div className="flex items-baseline gap-1.5">
-                <span className="text-2xl font-bold font-mono tracking-tight text-slate-900">{vitals.spO2}%</span>
-                <span className="text-[11px] text-teal-600 font-semibold">Optimal</span>
+                <span className="text-2xl font-bold font-mono tracking-tight text-white">{vitals.spO2}%</span>
+                <span className="text-[11px] text-emerald-400 font-semibold">Optimal</span>
               </div>
-              <p className="text-[10px] text-slate-500 font-mono mt-2">
+              <p className="text-[10px] text-slate-400 font-mono mt-2">
                 BP: {vitals.systolicBP}/{vitals.diastolicBP} mmHg
               </p>
             </div>
@@ -142,21 +142,21 @@ export const EchoShowDisplay: React.FC<EchoShowDisplayProps> = ({
             {/* Posture & Motion */}
             <div className={`p-3 rounded-2xl border transition-all ${
               vitals.fallDetected 
-                ? 'bg-red-500/10 border-red-300 text-red-950 shadow-sm' 
-                : 'glass-card border-slate-200/70 text-slate-800 hover:border-sky-300 transition-all'
+                ? 'bg-red-950/50 border-red-600 text-red-200' 
+                : 'bg-slate-900/90 border-slate-800 text-slate-200'
             }`}>
-              <div className="flex items-center justify-between text-[11px] text-slate-500 mb-1">
+              <div className="flex items-center justify-between text-[11px] text-slate-400 mb-1">
                 <span className="font-medium">Body Posture</span>
                 {vitals.fallDetected ? (
-                  <AlertTriangle className="w-3.5 h-3.5 text-red-600 animate-bounce" />
+                  <AlertTriangle className="w-3.5 h-3.5 text-red-400 animate-bounce" />
                 ) : (
-                  <UserCheck className="w-3.5 h-3.5 text-teal-600" />
+                  <UserCheck className="w-3.5 h-3.5 text-emerald-400" />
                 )}
               </div>
-              <div className="text-xs font-bold truncate capitalize mt-0.5 text-slate-900">
+              <div className="text-xs font-bold truncate capitalize mt-0.5 text-white">
                 {vitals.fallDetected ? '🚨 Fall on Floor' : vitals.bodyOrientation.replace('_', ' ')}
               </div>
-              <p className="text-[10px] text-slate-500 font-mono mt-2">
+              <p className="text-[10px] text-slate-400 font-mono mt-2">
                 {vitals.fallDetected ? `${vitals.impactGForce}G Impact registered` : `${vitals.lastMovementSecondsAgo}s active in ${vitals.currentRoom}`}
               </p>
             </div>
@@ -164,22 +164,22 @@ export const EchoShowDisplay: React.FC<EchoShowDisplayProps> = ({
             {/* Ring Smart Deadbolt */}
             <div className={`p-3 rounded-2xl border transition-all ${
               ring.doorLockState === 'unlocked'
-                ? 'bg-amber-500/10 border-amber-300 text-amber-950 shadow-sm' 
-                : 'glass-card border-slate-200/70 text-slate-800 hover:border-sky-300 transition-all'
+                ? 'bg-amber-950/40 border-amber-600 text-amber-200' 
+                : 'bg-slate-900/90 border-slate-800 text-slate-200'
             }`}>
-              <div className="flex items-center justify-between text-[11px] text-slate-500 mb-1">
+              <div className="flex items-center justify-between text-[11px] text-slate-400 mb-1">
                 <span className="font-medium">Ring Perimeter</span>
                 {ring.doorLockState === 'unlocked' ? (
-                  <KeyRound className="w-3.5 h-3.5 text-amber-600" />
+                  <KeyRound className="w-3.5 h-3.5 text-amber-400" />
                 ) : (
-                  <ShieldCheck className="w-3.5 h-3.5 text-sky-600" />
+                  <ShieldCheck className="w-3.5 h-3.5 text-sky-400" />
                 )}
               </div>
-              <div className="text-xs font-bold tracking-tight uppercase flex items-center gap-1.5 mt-0.5 text-slate-900">
-                <span className={`w-2 h-2 rounded-full ${ring.doorLockState === 'unlocked' ? 'bg-amber-500 animate-ping' : 'bg-teal-500'}`}></span>
+              <div className="text-xs font-bold tracking-tight uppercase flex items-center gap-1.5 mt-0.5 text-white">
+                <span className={`w-2 h-2 rounded-full ${ring.doorLockState === 'unlocked' ? 'bg-amber-400 animate-ping' : 'bg-emerald-400'}`}></span>
                 {ring.doorLockState}
               </div>
-              <p className="text-[10px] text-slate-500 font-mono mt-2 truncate">
+              <p className="text-[10px] text-slate-400 font-mono mt-2 truncate">
                 {ring.temporaryAccessCode ? `Code: ${ring.temporaryAccessCode}` : 'Perimeter Secured'}
               </p>
             </div>
@@ -189,44 +189,44 @@ export const EchoShowDisplay: React.FC<EchoShowDisplayProps> = ({
           <div className="flex-1 flex flex-col justify-center my-1">
             {vitals.fallDetected ? (
               /* EMERGENCY FALL CARD */
-              <div className="bg-red-50 border-2 border-red-500 rounded-3xl p-5 shadow-xl glow-red">
+              <div className="bg-red-950/70 border-2 border-red-600 rounded-3xl p-5 shadow-2xl glow-red animate-pulse-fast">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-11 h-11 rounded-2xl bg-red-100 border border-red-300 flex items-center justify-center">
-                      <ShieldAlert className="w-6 h-6 text-red-600" />
+                    <div className="w-11 h-11 rounded-2xl bg-red-600/30 border border-red-500 flex items-center justify-center">
+                      <ShieldAlert className="w-6 h-6 text-red-400" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-extrabold text-red-950 uppercase tracking-wide">
+                      <h3 className="text-lg font-extrabold text-red-100 uppercase tracking-wide">
                         Emergency Triage Protocol Active
                       </h3>
-                      <p className="text-xs text-red-700">
+                      <p className="text-xs text-red-300">
                         High impact fall detected in {vitals.currentRoom} · Autonomous Alexa+ MCP triage executed
                       </p>
                     </div>
                   </div>
-                  <span className="text-xs font-mono px-2.5 py-1 rounded-xl bg-red-100 border border-red-300 text-red-800 font-bold">
+                  <span className="text-xs font-mono px-2.5 py-1 rounded-xl bg-red-900/60 border border-red-600 text-red-200 font-bold">
                     PRIORITY 1
                   </span>
                 </div>
 
                 {/* 30s Auto-Dispatch Countdown Ribbon */}
-                <div className="flex items-center justify-between bg-white/90 border border-red-200 rounded-xl px-3.5 py-2 mb-3 text-xs font-mono">
-                  <div className="flex items-center gap-2 text-red-900">
-                    <Clock className="w-3.5 h-3.5 text-red-600 animate-pulse" />
+                <div className="flex items-center justify-between bg-black/50 border border-red-700/60 rounded-xl px-3.5 py-2 mb-3 text-xs font-mono">
+                  <div className="flex items-center gap-2 text-red-200">
+                    <Clock className="w-3.5 h-3.5 text-red-400 animate-pulse" />
                     <span>Auto-Dispatching 911 Ambulance in:</span>
-                    <span className="text-sm font-bold text-white bg-red-600 px-2.5 py-0.5 rounded shadow-xs">
+                    <span className="text-sm font-bold text-red-400 bg-red-950 px-2.5 py-0.5 rounded border border-red-800">
                       00:{countdown < 10 ? `0${countdown}` : countdown}s
                     </span>
                   </div>
-                  <span className="text-[10px] text-red-700 hidden sm:inline font-medium">Unacknowledged Fall Protocol</span>
+                  <span className="text-[10px] text-red-300 hidden sm:inline">Unacknowledged Fall Protocol</span>
                 </div>
 
                 {/* Spoken voice callout */}
-                <div className="bg-white border border-red-200 rounded-2xl p-3.5 mb-3 shadow-xs">
-                  <div className="flex items-center gap-2 text-xs font-semibold text-red-700 mb-1">
-                    <Mic className="w-3.5 h-3.5 text-red-600" /> Alexa+ Voice Speaking to Eleanor:
+                <div className="bg-slate-950/80 border border-red-700/60 rounded-2xl p-3.5 mb-3">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-red-300 mb-1">
+                    <Mic className="w-3.5 h-3.5 text-red-400" /> Alexa+ Voice Speaking to Eleanor:
                   </div>
-                  <p className="text-sm text-red-950 italic leading-relaxed">
+                  <p className="text-sm text-red-100 italic leading-relaxed">
                     "{lastExecution?.speechOutput || 'Eleanor, I detected a hard fall and noticed your heart rate is rapid. Please remain still. I have unlocked the front door for emergency assistance and alerted your daughter Sarah.'}"
                   </p>
                 </div>
@@ -240,7 +240,7 @@ export const EchoShowDisplay: React.FC<EchoShowDisplayProps> = ({
                       else onQuickAction("False alarm, I am okay. Please cancel emergency.");
                     }}
                     disabled={isProcessing}
-                    className="p-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold transition-all flex flex-col items-center justify-center gap-1 shadow-sm cursor-pointer disabled:opacity-50"
+                    className="p-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all flex flex-col items-center justify-center gap-1 shadow-md cursor-pointer disabled:opacity-50"
                   >
                     <CheckCircle2 className="w-4 h-4" />
                     <span>I'm OK (False Alarm)</span>
@@ -253,7 +253,7 @@ export const EchoShowDisplay: React.FC<EchoShowDisplayProps> = ({
                       else onQuickAction("I cannot get up, I hurt my hip. Please dispatch an ambulance now.");
                     }}
                     disabled={isProcessing}
-                    className="p-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold transition-all flex flex-col items-center justify-center gap-1 shadow-sm cursor-pointer disabled:opacity-50"
+                    className="p-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-bold transition-all flex flex-col items-center justify-center gap-1 shadow-md cursor-pointer disabled:opacity-50"
                   >
                     <ShieldAlert className="w-4 h-4 animate-bounce" />
                     <span>Dispatch 911 Now</span>
@@ -267,7 +267,7 @@ export const EchoShowDisplay: React.FC<EchoShowDisplayProps> = ({
                       else onQuickAction("Please call my daughter Sarah right now via Drop-In.");
                     }}
                     disabled={isProcessing}
-                    className="p-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold transition-all flex flex-col items-center justify-center gap-1 shadow-sm cursor-pointer disabled:opacity-50"
+                    className="p-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all flex flex-col items-center justify-center gap-1 shadow-md cursor-pointer disabled:opacity-50"
                   >
                     <Video className="w-4 h-4" />
                     <span>Drop-In (Sarah)</span>
@@ -276,34 +276,34 @@ export const EchoShowDisplay: React.FC<EchoShowDisplayProps> = ({
                   {/* View Clinical SBAR File */}
                   <button
                     onClick={() => setShowMedicalFile(true)}
-                    className="p-2.5 rounded-xl bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 text-xs font-bold transition-all flex flex-col items-center justify-center gap-1 shadow-sm cursor-pointer"
+                    className="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 text-xs font-bold transition-all flex flex-col items-center justify-center gap-1 shadow-md cursor-pointer"
                   >
-                    <FileText className="w-4 h-4 text-sky-600" />
+                    <FileText className="w-4 h-4 text-sky-400" />
                     <span>EMT Medical File</span>
                   </button>
                 </div>
 
                 {/* Spoken Voice Response Quick-Pills */}
                 <div className="flex items-center gap-1.5 flex-wrap text-[11px] mb-3">
-                  <span className="text-slate-600 font-medium">Quick Spoken Replies:</span>
+                  <span className="text-slate-400 font-medium">Quick Spoken Replies:</span>
                   <button
                     onClick={() => onQuickAction("I fell and can't get up, my hip hurts")}
                     disabled={isProcessing}
-                    className="px-2.5 py-1 rounded-lg bg-white border border-red-300 text-red-800 hover:bg-red-100 transition-colors cursor-pointer disabled:opacity-50 shadow-xs"
+                    className="px-2.5 py-1 rounded-lg bg-red-950/80 border border-red-800 text-red-200 hover:bg-red-900 transition-colors cursor-pointer disabled:opacity-50"
                   >
                     🗣️ "I can't get up, my hip hurts"
                   </button>
                   <button
                     onClick={() => onQuickAction("I just dropped the sensor by mistake, I'm okay")}
                     disabled={isProcessing}
-                    className="px-2.5 py-1 rounded-lg bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer disabled:opacity-50 shadow-xs"
+                    className="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700 text-slate-300 hover:bg-slate-800 transition-colors cursor-pointer disabled:opacity-50"
                   >
                     🗣️ "Dropped sensor, I'm fine"
                   </button>
                   <button
                     onClick={() => onQuickAction("Please call my daughter Sarah right now")}
                     disabled={isProcessing}
-                    className="px-2.5 py-1 rounded-lg bg-white border border-sky-300 text-sky-800 hover:bg-sky-50 transition-colors cursor-pointer disabled:opacity-50 shadow-xs"
+                    className="px-2.5 py-1 rounded-lg bg-indigo-950/80 border border-indigo-800 text-indigo-200 hover:bg-indigo-900 transition-colors cursor-pointer disabled:opacity-50"
                   >
                     🗣️ "Call Sarah right now"
                   </button>
@@ -311,51 +311,51 @@ export const EchoShowDisplay: React.FC<EchoShowDisplayProps> = ({
 
                 {/* Action summary checklist */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
-                  <div className="flex items-center gap-2 p-2 rounded-xl bg-white border border-red-200 text-red-900 shadow-xs">
-                    <CheckCircle2 className="w-4 h-4 text-teal-600 flex-shrink-0" />
+                  <div className="flex items-center gap-2 p-2 rounded-xl bg-slate-900/90 border border-red-800/60 text-red-200">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
                     <span className="truncate">Sarah Vance Notified (SMS)</span>
                   </div>
-                  <div className="flex items-center gap-2 p-2 rounded-xl bg-white border border-red-200 text-red-900 shadow-xs">
-                    <CheckCircle2 className="w-4 h-4 text-teal-600 flex-shrink-0" />
+                  <div className="flex items-center gap-2 p-2 rounded-xl bg-slate-900/90 border border-red-800/60 text-red-200">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
                     <span className="truncate">Ring Deadbolt Unlocked (Code: 911-EMT)</span>
                   </div>
-                  <div className="flex items-center gap-2 p-2 rounded-xl bg-white border border-red-200 text-red-900 shadow-xs">
-                    <CheckCircle2 className="w-4 h-4 text-teal-600 flex-shrink-0" />
+                  <div className="flex items-center gap-2 p-2 rounded-xl bg-slate-900/90 border border-red-800/60 text-red-200">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
                     <span className="truncate">SBAR Triage Ledger Committed</span>
                   </div>
                 </div>
               </div>
             ) : missedMed ? (
               /* MISSED MEDICATION CARD */
-              <div className="bg-amber-50 border-2 border-amber-400 rounded-3xl p-5 shadow-lg">
+              <div className="bg-amber-950/50 border-2 border-amber-600/80 rounded-3xl p-5 shadow-xl">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-11 h-11 rounded-2xl bg-amber-100 border border-amber-300 flex items-center justify-center">
-                      <Pill className="w-6 h-6 text-amber-600" />
+                    <div className="w-11 h-11 rounded-2xl bg-amber-600/30 border border-amber-500 flex items-center justify-center">
+                      <Pill className="w-6 h-6 text-amber-400" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold text-amber-950">
+                      <h3 className="text-lg font-bold text-amber-100">
                         Medication Adherence Alert
                       </h3>
-                      <p className="text-xs text-amber-800">
+                      <p className="text-xs text-amber-300">
                         Prescription overdue by 140 minutes · Smart Dispenser Slot {missedMed.dispenserSlot}
                       </p>
                     </div>
                   </div>
-                  <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-amber-100 border border-amber-300 text-amber-900 font-semibold">
+                  <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-amber-900/60 border border-amber-600 text-amber-300">
                     Slot {missedMed.dispenserSlot} Alert
                   </span>
                 </div>
 
-                <div className="bg-white border border-amber-200 rounded-2xl p-4 mb-4 shadow-xs">
+                <div className="bg-slate-950/80 border border-amber-800/60 rounded-2xl p-4 mb-4">
                   <div className="flex items-center justify-between mb-1.5">
-                    <span className="font-semibold text-slate-900 text-sm">{missedMed.name}</span>
-                    <span className="text-xs font-mono text-amber-700 font-semibold">{missedMed.dosage}</span>
+                    <span className="font-semibold text-slate-100 text-sm">{missedMed.name}</span>
+                    <span className="text-xs font-mono text-amber-400">{missedMed.dosage}</span>
                   </div>
-                  <p className="text-xs text-amber-800 mb-3">{missedMed.warningIfMissed}</p>
+                  <p className="text-xs text-amber-300 mb-3">{missedMed.warningIfMissed}</p>
 
-                  <div className="text-xs text-slate-700 bg-slate-50 p-2.5 rounded-xl border border-slate-200 italic flex items-center gap-2">
-                    <Mic className="w-3.5 h-3.5 text-sky-600 flex-shrink-0" />
+                  <div className="text-xs text-slate-200 bg-slate-900 p-2.5 rounded-xl border border-slate-800 italic flex items-center gap-2">
+                    <Mic className="w-3.5 h-3.5 text-sky-400 flex-shrink-0" />
                     <span>"{lastExecution?.speechOutput || 'Eleanor, your evening Eliquis anticoagulant is ready in slot 3.'}"</span>
                   </div>
                 </div>
@@ -370,7 +370,7 @@ export const EchoShowDisplay: React.FC<EchoShowDisplayProps> = ({
                       }
                     }}
                     disabled={isProcessing}
-                    className="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold shadow-xs transition-all flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
+                    className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-md transition-all flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
                   >
                     <CheckCircle2 className="w-3.5 h-3.5" />
                     <span>Confirm Dose Taken</span>
@@ -384,7 +384,7 @@ export const EchoShowDisplay: React.FC<EchoShowDisplayProps> = ({
                       }
                     }}
                     disabled={isProcessing}
-                    className="px-4 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-700 text-xs font-semibold border border-slate-300 shadow-xs transition-all disabled:opacity-50 cursor-pointer"
+                    className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 transition-all disabled:opacity-50 cursor-pointer"
                   >
                     Snooze 15 min
                   </button>
@@ -392,53 +392,53 @@ export const EchoShowDisplay: React.FC<EchoShowDisplayProps> = ({
               </div>
             ) : lastExecution?.speechOutput?.includes("Eliquis dose as taken") ? (
               /* DOSE CONFIRMED SUCCESS CARD */
-              <div className="bg-teal-50 border-2 border-teal-400 rounded-3xl p-5 shadow-lg text-center">
-                <div className="w-12 h-12 rounded-2xl bg-teal-100 border border-teal-300 flex items-center justify-center mx-auto mb-3">
-                  <CheckCircle2 className="w-7 h-7 text-teal-600" />
+              <div className="bg-emerald-950/40 border-2 border-emerald-600/80 rounded-3xl p-5 shadow-xl text-center">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-600/30 border border-emerald-500 flex items-center justify-center mx-auto mb-3">
+                  <CheckCircle2 className="w-7 h-7 text-emerald-400" />
                 </div>
-                <h3 className="text-lg font-bold text-teal-950 mb-1">
+                <h3 className="text-lg font-bold text-emerald-100 mb-1">
                   Eliquis Dose Confirmed & Verified
                 </h3>
-                <p className="text-xs text-teal-800 mb-3 font-mono">
+                <p className="text-xs text-emerald-300 mb-3 font-mono">
                   Dispenser Slot 3 cleared · Daily Adherence 100% · Telemetry Restored
                 </p>
-                <div className="max-w-md mx-auto bg-white border border-teal-200 rounded-2xl p-3 text-xs text-slate-700 italic shadow-xs">
+                <div className="max-w-md mx-auto bg-slate-950/80 border border-emerald-800/60 rounded-2xl p-3 text-xs text-slate-200 italic">
                   "{lastExecution.speechOutput}"
                 </div>
               </div>
             ) : ring.visitorType === 'first_responder' ? (
               /* RING FIRST RESPONDER ARRIVAL */
-              <div className="bg-sky-50 border-2 border-sky-400 rounded-3xl p-5 shadow-lg">
+              <div className="bg-sky-950/50 border-2 border-sky-600/80 rounded-3xl p-5 shadow-xl">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-11 h-11 rounded-2xl bg-sky-100 border border-sky-300 flex items-center justify-center">
-                      <Video className="w-6 h-6 text-sky-600" />
+                    <div className="w-11 h-11 rounded-2xl bg-sky-600/30 border border-sky-500 flex items-center justify-center">
+                      <Video className="w-6 h-6 text-sky-400" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold text-sky-950 flex items-center gap-2">
-                        Ring Video Doorbell Pro <span className="text-[10px] px-2 py-0.5 rounded bg-teal-100 border border-teal-300 text-teal-800 font-normal">LIVE</span>
+                      <h3 className="text-lg font-bold text-sky-100 flex items-center gap-2">
+                        Ring Video Doorbell Pro <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-950 border border-emerald-700 text-emerald-400 font-normal">LIVE</span>
                       </h3>
-                      <p className="text-xs text-sky-800">
+                      <p className="text-xs text-sky-300">
                         First Responders verified at front door
                       </p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <span className="text-xs font-mono text-teal-700 font-bold block">DEADBOLT UNLOCKED</span>
-                    <span className="text-[10px] text-slate-500 font-mono">CODE: {ring.temporaryAccessCode || '911-EMT'}</span>
+                    <span className="text-xs font-mono text-emerald-400 font-bold block">DEADBOLT UNLOCKED</span>
+                    <span className="text-[10px] text-slate-400 font-mono">CODE: {ring.temporaryAccessCode || '911-EMT'}</span>
                   </div>
                 </div>
 
-                <div className="relative rounded-2xl overflow-hidden border border-slate-200 max-h-48 mb-3 shadow-xs">
+                <div className="relative rounded-2xl overflow-hidden border border-slate-700 max-h-48 mb-3">
                   <img
                     src={ring.cameraSnapshotUrl}
                     alt="Ring Front Porch Feed"
                     className="w-full h-44 object-cover brightness-95"
                   />
-                  <div className="absolute top-2 left-2 px-2 py-1 rounded-md bg-white/90 border border-slate-200 text-[10px] text-slate-700 font-mono flex items-center gap-1.5 shadow-xs">
+                  <div className="absolute top-2 left-2 px-2 py-1 rounded-md bg-black/70 text-[10px] text-slate-300 font-mono flex items-center gap-1.5">
                     <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> Porch Cam HD
                   </div>
-                  <div className="absolute bottom-2 left-2 right-2 px-3 py-1.5 rounded-xl bg-white/95 backdrop-blur-md text-xs text-sky-900 border border-sky-200 shadow-sm">
+                  <div className="absolute bottom-2 left-2 right-2 px-3 py-1.5 rounded-xl bg-black/80 backdrop-blur-md text-xs text-sky-300 border border-sky-500/30">
                     🎙️ Ring Intercom: "Door unlocked. Eleanor is in the hallway. PulseGuard EHR ready on screen."
                   </div>
                 </div>
@@ -448,13 +448,13 @@ export const EchoShowDisplay: React.FC<EchoShowDisplayProps> = ({
               <div className="text-center py-6 px-4">
                 {/* ACTIVE SNOOZE TIMER WIDGET */}
                 {snoozeState?.active && (
-                  <div className="glass-card max-w-md mx-auto mb-4 p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-orange-500/5 to-white/70 border-amber-300 text-amber-950 flex items-center justify-between shadow-sm">
+                  <div className="max-w-md mx-auto mb-4 p-3.5 rounded-2xl bg-amber-950/50 border border-amber-600/70 text-amber-200 flex items-center justify-between shadow-xl">
                     <div className="flex items-center gap-2.5">
-                      <Clock className="w-4 h-4 text-amber-600 animate-spin" />
+                      <Clock className="w-4 h-4 text-amber-400 animate-spin" />
                       <div className="text-left">
                         <span className="text-xs font-bold block">{snoozeState.medicationName} Reminder Snoozed</span>
-                        <span className="text-[11px] text-amber-800 font-mono">
-                          Re-alerting in: <span className="font-bold text-slate-900 bg-white px-1.5 py-0.5 rounded border border-amber-300">
+                        <span className="text-[11px] text-amber-300 font-mono">
+                          Re-alerting in: <span className="font-bold text-white bg-slate-900 px-1.5 py-0.5 rounded border border-amber-700">
                             {Math.floor(snoozeState.remainingSeconds / 60)}:{snoozeState.remainingSeconds % 60 < 10 ? `0${snoozeState.remainingSeconds % 60}` : snoozeState.remainingSeconds % 60}
                           </span> min (Slot {snoozeState.dispenserSlot})
                         </span>
@@ -463,7 +463,7 @@ export const EchoShowDisplay: React.FC<EchoShowDisplayProps> = ({
                     {onFastForwardSnooze && (
                       <button
                         onClick={onFastForwardSnooze}
-                        className="px-2.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-[11px] font-bold flex items-center gap-1 transition-all cursor-pointer shadow-xs"
+                        className="px-2.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-[11px] font-bold flex items-center gap-1 transition-all cursor-pointer shadow-md"
                         title="Fast-forward timer to 3 seconds for live demo"
                       >
                         <Zap className="w-3.5 h-3.5" />
@@ -473,19 +473,19 @@ export const EchoShowDisplay: React.FC<EchoShowDisplayProps> = ({
                   </div>
                 )}
 
-                <div className="w-16 h-16 rounded-3xl bg-gradient-to-tr from-sky-400/20 to-cyan-400/25 backdrop-blur-md border border-sky-300/40 flex items-center justify-center mx-auto mb-3 shadow-lg shadow-sky-400/15 text-sky-600 glow-blue">
-                  <ShieldCheck className="w-8 h-8 text-sky-600" />
+                <div className="w-16 h-16 rounded-2xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center mx-auto mb-3 glow-blue">
+                  <ShieldCheck className="w-8 h-8 text-sky-400" />
                 </div>
-                <h2 className="text-xl font-bold text-slate-900 mb-1.5">
+                <h2 className="text-xl font-bold text-white mb-1.5">
                   Eleanor Vance · Resting Comfortably
                 </h2>
-                <p className="text-xs text-slate-500 max-w-md mx-auto mb-4">
+                <p className="text-xs text-slate-400 max-w-md mx-auto mb-4">
                   Alexa+ ambient guard is actively correlating wearable vitals, motion sensors, and Ring perimeter deadbolts.
                 </p>
 
                 {lastExecution?.speechOutput && (
-                  <div className="glass-card max-w-md mx-auto rounded-2xl p-3.5 text-xs text-slate-700 italic border border-slate-200/80 shadow-xs">
-                    <span className="text-sky-600 font-semibold not-italic block mb-0.5">Alexa+ Response:</span>
+                  <div className="max-w-md mx-auto bg-slate-900/80 border border-slate-800 rounded-2xl p-3 text-xs text-slate-300 italic">
+                    <span className="text-sky-400 font-semibold not-italic block mb-0.5">Alexa+ Response:</span>
                     "{lastExecution.speechOutput}"
                   </div>
                 )}
@@ -494,14 +494,14 @@ export const EchoShowDisplay: React.FC<EchoShowDisplayProps> = ({
           </div>
 
           {/* BOTTOM ALEXA LIGHT BAR: Signature Echo Show LED Glow */}
-          <div className="pt-3 border-t border-slate-200/70 bg-white/40 backdrop-blur-sm px-2 flex items-center justify-between rounded-b-2xl">
+          <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="relative flex items-center justify-center">
                 <div className={`w-3.5 h-3.5 rounded-full ${
-                  isEmergency ? 'bg-red-500 shadow-md shadow-red-500/80' : 'bg-sky-500 shadow-md shadow-sky-400/80'
+                  isEmergency ? 'bg-red-500 shadow-lg shadow-red-500/80' : 'bg-sky-400 shadow-lg shadow-sky-400/80'
                 } ${isProcessing ? 'animate-ping' : ''}`}></div>
               </div>
-              <span className="text-xs font-mono text-slate-600 font-medium">
+              <span className="text-xs font-mono text-slate-300">
                 {isProcessing ? 'Alexa+ reasoning over Model Context Protocol...' : 'Alexa+ Active in Home'}
               </span>
             </div>
@@ -512,8 +512,8 @@ export const EchoShowDisplay: React.FC<EchoShowDisplayProps> = ({
                 <span
                   key={i}
                   className={`w-1 rounded-full transition-all duration-300 ${
-                    isEmergency ? 'bg-red-500' : 'bg-gradient-to-t from-sky-500 to-cyan-400'
-                  } ${isProcessing ? 'animate-wave' : 'opacity-50'}`}
+                    isEmergency ? 'bg-red-500' : 'bg-sky-400'
+                  } ${isProcessing ? 'animate-wave' : 'opacity-40'}`}
                   style={{ height: `${isProcessing ? h : 30}%` }}
                 ></span>
               ))}

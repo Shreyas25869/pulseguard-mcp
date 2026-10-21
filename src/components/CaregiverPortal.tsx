@@ -27,29 +27,32 @@ export const CaregiverPortal: React.FC<CaregiverPortalProps> = ({
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Mobile-style Caregiver App Frame Banner */}
-      <div className="glass-panel rounded-3xl p-6 shadow-sm">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/70 pb-5 mb-5">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-sky-500/20">
+      <div className="bg-[#0f172a]/90 backdrop-blur-xl border border-slate-800/90 rounded-2xl p-6 shadow-xl">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-5 mb-5">
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-600 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-cyan-900/30">
               <Smartphone className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-                Caregiver Mobile Portal <span className="glass-pill text-xs px-2.5 py-0.5 rounded-full text-sky-700 font-mono font-semibold shadow-2xs">Sarah Vance</span>
+              <h2 className="text-lg font-bold text-slate-100 flex items-center gap-2.5">
+                Caregiver Mobile Portal 
+                <span className="bg-cyan-950/70 border border-cyan-800/80 text-cyan-400 text-xs px-2.5 py-0.5 rounded-full font-mono font-semibold">
+                  Sarah Vance
+                </span>
               </h2>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-slate-400 mt-0.5">
                 Remote Monitoring Eleanor Vance (Mother, 78) · Seattle Residence
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <button
               onClick={onToggleLock}
-              className={`px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer ${
+              className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm cursor-pointer ${
                 ring.doorLockState === 'unlocked'
-                  ? 'bg-amber-600 hover:bg-amber-700 text-white'
-                  : 'glass-pill hover:bg-white text-slate-700'
+                  ? 'bg-amber-600 hover:bg-amber-500 text-white border border-amber-500/50'
+                  : 'bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700'
               }`}
             >
               {ring.doorLockState === 'unlocked' ? <Unlock className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
@@ -58,7 +61,7 @@ export const CaregiverPortal: React.FC<CaregiverPortalProps> = ({
 
             <button
               onClick={onCallHelp}
-              className="px-3.5 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-semibold flex items-center gap-1.5 shadow-md shadow-red-600/20 transition-all cursor-pointer"
+              className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-red-900/40 transition-all cursor-pointer"
             >
               <PhoneCall className="w-4 h-4" />
               <span>Call Eleanor's Echo</span>
@@ -67,92 +70,100 @@ export const CaregiverPortal: React.FC<CaregiverPortalProps> = ({
         </div>
 
         {/* Current Safety Status Card */}
-        <div className={`p-4 rounded-2xl border transition-all mb-6 shadow-xs ${
+        <div className={`p-4 rounded-xl border transition-all mb-6 shadow-sm ${
           isEmergency 
-            ? 'bg-red-500/10 border-red-300 text-red-950 backdrop-blur-md' 
-            : 'glass-card border-slate-200/80 text-slate-800'
+            ? 'bg-red-950/40 border-red-700/80 text-red-100 shadow-red-950/30' 
+            : 'bg-slate-950/60 border-slate-800/80 text-slate-200'
         }`}>
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                isEmergency ? 'bg-red-100 border border-red-300 text-red-600' : 'bg-teal-500/10 border border-teal-400/30 text-teal-700'
+            <div className="flex items-center gap-3.5">
+              <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${
+                isEmergency 
+                  ? 'bg-red-900/50 border border-red-600/70 text-red-300' 
+                  : 'bg-emerald-950/50 border border-emerald-700/60 text-emerald-400'
               }`}>
-                {isEmergency ? <AlertTriangle className="w-5 h-5 text-red-600 animate-pulse" /> : <CheckCircle2 className="w-5 h-5 text-teal-600" />}
+                {isEmergency ? <AlertTriangle className="w-5 h-5 text-red-400 animate-pulse" /> : <CheckCircle2 className="w-5 h-5 text-emerald-400" />}
               </div>
               <div>
-                <span className="text-xs uppercase font-mono tracking-wider font-semibold opacity-70">Live Status</span>
-                <p className="text-sm font-bold text-slate-900">
+                <span className="text-[10px] uppercase font-mono tracking-wider font-semibold text-slate-400">Live Status</span>
+                <p className="text-sm font-bold text-slate-100">
                   {isEmergency ? '🚨 CRITICAL MEDICAL ALERT IN PROGRESS' : 'Stable · Active in Living Room'}
                 </p>
               </div>
             </div>
             <div className="text-right text-xs font-mono">
-              <span className="text-slate-500 block">Telemetry Synced</span>
-              <span className="text-sky-700 font-semibold">Echo Show 15 Online</span>
+              <span className="text-slate-400 block text-[11px]">Telemetry Synced</span>
+              <span className="text-cyan-400 font-semibold">Echo Show 15 Online</span>
             </div>
           </div>
         </div>
 
         {/* Quick Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-          <div className="p-3.5 rounded-2xl glass-card border-slate-200/80 shadow-xs">
-            <span className="text-xs text-slate-500 font-medium">Resting Heart Rate</span>
-            <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-xl font-bold font-mono text-slate-900">{vitals.heartRate}</span>
-              <span className="text-xs text-slate-500">BPM</span>
-              <Heart className={`w-3.5 h-3.5 ml-auto ${vitals.heartRate > 120 ? 'text-red-500' : 'text-rose-500'}`} />
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 mb-6">
+          <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800/80 shadow-sm">
+            <span className="text-xs text-slate-400 font-medium">Resting Heart Rate</span>
+            <div className="flex items-baseline gap-2 mt-1.5">
+              <span className="text-2xl font-bold font-mono text-slate-100">{vitals.heartRate}</span>
+              <span className="text-xs text-slate-400 font-mono">BPM</span>
+              <Heart className={`w-4 h-4 ml-auto ${vitals.heartRate > 120 ? 'text-red-400 animate-pulse' : 'text-rose-400'}`} />
             </div>
           </div>
 
-          <div className="p-3.5 rounded-2xl glass-card border-slate-200/80 shadow-xs">
-            <span className="text-xs text-slate-500 font-medium">Medication Compliance</span>
-            <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-xl font-bold font-mono text-slate-900">
+          <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800/80 shadow-sm">
+            <span className="text-xs text-slate-400 font-medium">Medication Compliance</span>
+            <div className="flex items-baseline gap-2 mt-1.5">
+              <span className="text-2xl font-bold font-mono text-slate-100">
                 {medications.filter(m => m.status === 'taken').length} / {medications.length}
               </span>
-              <span className="text-xs text-teal-700 font-semibold">Today</span>
-              <Pill className="w-3.5 h-3.5 text-amber-500 ml-auto" />
+              <span className="text-xs text-emerald-400 font-semibold font-mono">Today</span>
+              <Pill className="w-4 h-4 text-amber-400 ml-auto" />
             </div>
           </div>
 
-          <div className="p-3.5 rounded-2xl glass-card border-slate-200/80 shadow-xs">
-            <span className="text-xs text-slate-500 font-medium">Ring Perimeter Status</span>
-            <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-base font-bold font-mono text-slate-900 uppercase">{ring.doorLockState}</span>
-              <span className="text-xs text-slate-500">Deadbolt</span>
-              <Shield className="w-3.5 h-3.5 text-sky-600 ml-auto" />
+          <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800/80 shadow-sm">
+            <span className="text-xs text-slate-400 font-medium">Ring Perimeter Status</span>
+            <div className="flex items-baseline gap-2 mt-1.5">
+              <span className="text-base font-bold font-mono text-slate-100 uppercase">{ring.doorLockState}</span>
+              <span className="text-xs text-slate-400 font-mono">Deadbolt</span>
+              <Shield className="w-4 h-4 text-cyan-400 ml-auto" />
             </div>
           </div>
         </div>
 
         {/* Caregiver Emergency Direct Contacts */}
-        <div className="border-t border-slate-200/70 pt-5">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
+        <div className="border-t border-slate-800/80 pt-5">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
             Registered Emergency Escalation Tree
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
-            <div className="p-3 rounded-2xl glass-card border-slate-200/80 flex items-center justify-between shadow-xs">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+            <div className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800/80 flex items-center justify-between shadow-sm">
               <div>
-                <span className="font-semibold text-slate-900 block">Sarah Vance (Daughter)</span>
-                <span className="text-[11px] text-slate-500 font-mono">(555) 321-9876 · Primary</span>
+                <span className="font-semibold text-slate-200 block">Sarah Vance (Daughter)</span>
+                <span className="text-[11px] text-slate-400 font-mono">(555) 321-9876 · Primary</span>
               </div>
-              <span className="glass-pill text-[10px] px-2.5 py-0.5 rounded-lg text-sky-700 font-mono font-medium shadow-2xs">SMS Armed</span>
+              <span className="bg-cyan-950/60 border border-cyan-800/70 text-cyan-400 text-[10px] px-2.5 py-1 rounded-lg font-mono font-medium">
+                SMS Armed
+              </span>
             </div>
 
-            <div className="p-3 rounded-2xl glass-card border-slate-200/80 flex items-center justify-between shadow-xs">
+            <div className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800/80 flex items-center justify-between shadow-sm">
               <div>
-                <span className="font-semibold text-slate-900 block">Dr. Robert Chen</span>
-                <span className="text-[11px] text-slate-500 font-mono">Cardiology Clinic</span>
+                <span className="font-semibold text-slate-200 block">Dr. Robert Chen</span>
+                <span className="text-[11px] text-slate-400 font-mono">Cardiology Clinic</span>
               </div>
-              <span className="glass-pill text-[10px] px-2.5 py-0.5 rounded-lg text-slate-700 font-mono shadow-2xs">EHR Synced</span>
+              <span className="bg-slate-900 border border-slate-800 text-slate-400 text-[10px] px-2.5 py-1 rounded-lg font-mono">
+                EHR Synced
+              </span>
             </div>
 
-            <div className="p-3 rounded-2xl glass-card border-slate-200/80 flex items-center justify-between shadow-xs">
+            <div className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800/80 flex items-center justify-between shadow-sm">
               <div>
-                <span className="font-semibold text-slate-900 block">King County EMS (911)</span>
-                <span className="text-[11px] text-slate-500 font-mono">Auto-Dispatch Staged</span>
+                <span className="font-semibold text-slate-200 block">King County EMS (911)</span>
+                <span className="text-[11px] text-slate-400 font-mono">Auto-Dispatch Staged</span>
               </div>
-              <span className="glass-pill text-[10px] px-2.5 py-0.5 rounded-lg text-red-700 font-mono font-medium shadow-2xs">Code 911-EMT</span>
+              <span className="bg-red-950/60 border border-red-800/70 text-red-400 text-[10px] px-2.5 py-1 rounded-lg font-mono font-medium">
+                Code 911-EMT
+              </span>
             </div>
           </div>
         </div>
