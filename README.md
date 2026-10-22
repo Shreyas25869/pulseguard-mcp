@@ -3,11 +3,13 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Model Context Protocol](https://img.shields.io/badge/Protocol-Model%20Context%20Protocol%20(MCP)-00a8e1.svg)](https://modelcontextprotocol.io)
 [![Amazon Bedrock](https://img.shields.io/badge/AI%20Engine-Amazon%20Bedrock%20Nova-orange.svg)](https://aws.amazon.com/bedrock/)
+[![Demo Video](https://img.shields.io/badge/Demo%20Video-YouTube-red.svg)](https://youtu.be/oQT4WTh3QOg)
 [![Track](https://img.shields.io/badge/Hackathon-Build%2C%20Ship%2C%20Shape%202026-brightgreen.svg)](https://amazonappdev2026.devpost.com/)
 
 > **Ambient Proactive Healthcare & Emergency Copilot for Alexa+ via Model Context Protocol (MCP)**  
 > Developed for the **Amazon Developer Hackathon: Build, Ship, Shape 2026**  
-> **Primary Track:** Alexa+ · **Mini-Challenges:** AWS Builder & Open Source · **Bonus Category:** Friction Log
+> **Primary Track:** Alexa+ · **Mini-Challenges:** AWS Builder & Open Source · **Bonus Category:** Friction Log  
+> 📺 **[Watch the 2.5-Minute Video Walkthrough on YouTube](https://youtu.be/oQT4WTh3QOg)**
 
 ---
 

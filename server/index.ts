@@ -15,6 +15,39 @@ const PORT = process.env.PORT || 3001;
 app.use(cors());
 app.use(express.json());
 
+// Root landing page for the backend server
+app.get('/', (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>PulseGuard MCP Server</title>
+        <style>
+          body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0b1120; color: #f8fafc; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+          .card { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 32px; max-width: 520px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); text-align: center; }
+          h1 { color: #38bdf8; margin-top: 0; font-size: 24px; }
+          p { color: #94a3b8; font-size: 14px; line-height: 1.6; }
+          .badge { display: inline-block; background: #065f46; color: #34d399; padding: 4px 12px; border-radius: 9999px; font-size: 12px; font-weight: 600; margin-bottom: 16px; }
+          .btn { display: block; background: #0284c7; color: white; text-decoration: none; padding: 12px 20px; border-radius: 8px; font-weight: 600; margin: 12px 0; transition: background 0.2s; }
+          .btn:hover { background: #0369a1; }
+          .btn-secondary { background: #334155; }
+          .btn-secondary:hover { background: #475569; }
+        </style>
+      </head>
+      <body>
+        <div class="card">
+          <div class="badge">● MCP Server Online</div>
+          <h1>🛡️ PulseGuard MCP Backend</h1>
+          <p>The Model Context Protocol (MCP) and telemetry reasoning server is actively running.</p>
+          <a class="btn" href="http://localhost:3000">🖥️ Open Frontend Simulator (Port 3000)</a>
+          <a class="btn btn-secondary" href="/api/mcp/tools">🔧 View Registered MCP Tools (JSON)</a>
+          <a class="btn btn-secondary" href="/api/state">📊 View Current Telemetry State (JSON)</a>
+        </div>
+      </body>
+    </html>
+  `);
+});
+
 // Initialize Model Context Protocol (MCP) Server instance
 const mcpServer = new McpServer({
   name: 'pulseguard-mcp',
